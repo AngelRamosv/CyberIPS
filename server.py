@@ -86,7 +86,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def sync_izzi_data():
     """
-    Este hilo consulta periódicamente la API de Izzi y actualiza el archivo data.json.
+    Este hilo consulta periódicamente la API de Izzi, actualiza procesos y auto-agrega IPs nuevas.
     """
     IZZI_API_URL = "https://rpabackizzi.azurewebsites.net/Bots/getBots"
     
@@ -102,34 +102,51 @@ def sync_izzi_data():
                 ip = item.get("botIp")
                 proceso = item.get("procesoName")
                 if ip and proceso:
-                    izzi_dict[ip] = str(proceso)
+                    izzi_dict[str(ip).strip()] = str(proceso).strip()
             
-            # Leemos nuestro data.json actual
             if os.path.exists(DATA_FILE):
                 with open(DATA_FILE, 'r', encoding='utf-8') as f:
                     cyber_data = json.load(f)
                     
                 cambios = False
+                existing_ips = {str(e.get("ip", "")).strip(): e for e in cyber_data if e.get("ip")}
+                
+                # 1. Actualizar procesos de IPs existentes
                 for equipo in cyber_data:
-                    ip = equipo.get("ip")
+                    ip = str(equipo.get("ip", "")).strip()
                     if ip in izzi_dict:
                         nuevo_proceso = izzi_dict[ip]
-                        # Si el proceso en izzi es diferente al nuestro, lo actualizamos
                         if equipo.get("p") != nuevo_proceso:
                             equipo["p"] = nuevo_proceso
                             cambios = True
+
+                # 2. Agregar automáticamente IPs nuevas que vengan en Izzi
+                max_id = max([e.get("id", 0) for e in cyber_data], default=0)
+                for ip, proceso in izzi_dict.items():
+                    if ip not in existing_ips:
+                        max_id += 1
+                        nuevo_equipo = {
+                            "id": max_id,
+                            "m": ip,
+                            "ip": ip,
+                            "p": proceso,
+                            "o": "LINUX",
+                            "u": "ugenome",
+                            "pw": "UbuntuCyb2026$"
+                        }
+                        cyber_data.append(nuevo_equipo)
+                        existing_ips[ip] = nuevo_equipo
+                        cambios = True
                 
-                # Si hubo cambios, guardamos
                 if cambios:
                     with open(DATA_FILE, 'w', encoding='utf-8') as f:
                         json.dump(cyber_data, f, indent=4)
-                    print(f"  [Auto-Sync] Datos de CyberIps actualizados desde Izzi.")
+                    print(f"  [Auto-Sync] Datos de CyberIps actualizados desde Izzi ({len(cyber_data)} equipos).")
                     
         except Exception as e:
             print(f"  [Auto-Sync Error] No se pudo sincronizar con Izzi: {e}")
         
-        # Espera 60 segundos antes de volver a consultar
-        time.sleep(60)
+        time.sleep(30)
 
 if __name__ == '__main__':
     import sys
