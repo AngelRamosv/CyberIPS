@@ -1,9 +1,13 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import json, os, socket
+import threading
+import time
+import urllib.request
+import urllib.error
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data.json')
 STATIC_DIR = os.path.dirname(__file__)
-PORT = 8080
+PORT = 8765
 
 class Handler(BaseHTTPRequestHandler):
 
@@ -80,6 +84,53 @@ class Handler(BaseHTTPRequestHandler):
         print(f"  [{self.address_string()}]  {fmt % args}")
 
 
+def sync_izzi_data():
+    """
+    Este hilo consulta periódicamente la API de Izzi y actualiza el archivo data.json.
+    """
+    IZZI_API_URL = "https://rpabackizzi.azurewebsites.net/Bots/getBots"
+    
+    while True:
+        try:
+            req = urllib.request.Request(IZZI_API_URL, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as response:
+                api_data = json.loads(response.read().decode('utf-8'))
+            
+            # Convertimos la lista de izzi en un diccionario { "192.168...": "Nombre Proceso" }
+            izzi_dict = {}
+            for item in api_data:
+                ip = item.get("botIp")
+                proceso = item.get("procesoName")
+                if ip and proceso:
+                    izzi_dict[ip] = str(proceso)
+            
+            # Leemos nuestro data.json actual
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                    cyber_data = json.load(f)
+                    
+                cambios = False
+                for equipo in cyber_data:
+                    ip = equipo.get("ip")
+                    if ip in izzi_dict:
+                        nuevo_proceso = izzi_dict[ip]
+                        # Si el proceso en izzi es diferente al nuestro, lo actualizamos
+                        if equipo.get("p") != nuevo_proceso:
+                            equipo["p"] = nuevo_proceso
+                            cambios = True
+                
+                # Si hubo cambios, guardamos
+                if cambios:
+                    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+                        json.dump(cyber_data, f, indent=4)
+                    print(f"  [Auto-Sync] Datos de CyberIps actualizados desde Izzi.")
+                    
+        except Exception as e:
+            print(f"  [Auto-Sync Error] No se pudo sincronizar con Izzi: {e}")
+        
+        # Espera 60 segundos antes de volver a consultar
+        time.sleep(60)
+
 if __name__ == '__main__':
     import sys
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
@@ -103,5 +154,9 @@ if __name__ == '__main__':
     print('  |  Ctrl+C para detener el servidor        |')
     print('  +-----------------------------------------+')
     print()
+
+    # Iniciar hilo de sincronización en segundo plano
+    sync_thread = threading.Thread(target=sync_izzi_data, daemon=True)
+    sync_thread.start()
 
     httpd.serve_forever()
