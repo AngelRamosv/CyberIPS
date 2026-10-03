@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CyberIPs — Panel de Infraestructura</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#060608;--bg2:#0d0d12;--bg3:#13131a;
@@ -238,9 +237,9 @@ tbody tr.row-editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,
     </select>
     <button class="btn btn-a" onclick="toggleForm()">＋ Agregar Equipo</button>
     <button class="btn btn-p" onclick="saveAll()">💾 Guardar Todo</button>
-    <button class="btn btn-g" onclick="openImport()" style="background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25);color:var(--cyan)">⬆ Importar Excel / CSV</button>
-    <button class="btn btn-g" onclick="downloadTemplate()" style="font-size:11px;padding:7px 12px" title="Descargar plantilla Excel">📄 Plantilla Excel</button>
-    <input type="file" id="csvFile" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFile(event)"/>
+    <button class="btn btn-g" onclick="openImport()" style="background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25);color:var(--cyan)">⬆ Importar CSV</button>
+    <button class="btn btn-g" onclick="downloadTemplate()" style="font-size:11px;padding:7px 12px" title="Descargar plantilla CSV para Excel">📄 Plantilla</button>
+    <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="handleFile(event)"/>
   </div>
 
   <div class="tw">
@@ -659,17 +658,14 @@ async function _pushData(){
 function exportCSV(){
   const h=['IP','PROCESO','SO','USUARIO','PASSWORD'];
   const rows=data.map(d=>[d.ip,d.p,d.o,d.u||'',d.pw||'']);
-  if(typeof XLSX !== 'undefined'){
-    const ws = XLSX.utils.aoa_to_sheet([h, ...rows]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'CyberIPS');
-    XLSX.writeFile(wb, 'CyberIPS_Export.xlsx');
-    toast('📄','Excel (.xlsx) exportado');
-  } else {
-    const csv='\uFEFF'+[h,...rows].map(r=>r.join(';')).join('\r\n');
-    const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),download:'CyberIps.csv'});
-    a.click();toast('📄','CSV (Excel) exportado');
-  }
+  const csv='\uFEFF'+[h,...rows].map(r=>r.join(';')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='CyberIps.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  toast('📄','CSV exportado');
 }
 function renderPg(tp){
   const c=document.getElementById('pbs');
@@ -710,33 +706,16 @@ function closeImport(e){
 function handleFile(e){
   const file = e.target.files[0];
   if(!file) return;
-  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
-
-  if(isExcel && typeof XLSX !== 'undefined'){
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const data = new Uint8Array(ev.target.result);
-        const workbook = XLSX.read(data, {type: 'array'});
-        const firstSheet = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheet];
-        const csvText = XLSX.utils.sheet_to_csv(worksheet, {FS: ';'});
-        parseCSV(csvText);
-      } catch(err){
-        toast('❌','Error al leer archivo Excel: '+err.message);
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  } else {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try{ parseCSV(ev.target.result); }
-      catch(err){ toast('❌','Error al leer el archivo: '+err.message); }
-    };
-    reader.readAsText(file, 'UTF-8');
-  }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try{ parseCSV(ev.target.result); }
+    catch(err){ toast('❌','Error al leer el archivo: '+err.message); }
+  };
+  reader.readAsText(file, 'UTF-8');
 }
 function parseCSV(text){
+  if(!text) return;
+  text = text.replace(/^\uFEFF/, '').replace(/^\uEF\xBB\xBF/, '').trim();
   const lines = text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
   if(!lines.length){ toast('⚠️','El archivo está vacío'); return; }
 
@@ -755,12 +734,12 @@ function parseCSV(text){
 
   dataLines.forEach((line, idx) => {
     if(!line.trim()) return;
-    const cols = line.split(sep).map(c=>c.trim().replace(/^"|"$/g,''));
-    const ip  = cols[0]||'';
-    const p   = cols[1]||'';
-    const o   = (cols[2]||'').toUpperCase().includes('WIN') ? 'WINDOWS' : 'LINUX';
-    const u   = cols[3]||'ugenome';
-    const pw  = cols[4]||'UbuntuCyb2026$';
+    const cols = line.split(sep).map(c=>c.trim().replace(/^["'\s]+|["'\s]+$/g,''));
+    let ip  = (cols[0]||'').replace(/[^\d.]/g, '');
+    let p   = cols[1]||'';
+    let o   = (cols[2]||'').toUpperCase().includes('WIN') ? 'WINDOWS' : 'LINUX';
+    let u   = cols[3]||'ugenome';
+    let pw  = cols[4]||'UbuntuCyb2026$';
 
     let status = 'new';
     if(!ip || !ip.match(/^\d{1,3}(\.\d{1,3}){3}$/)) status='err';
@@ -817,32 +796,23 @@ function confirmImport(includeDups){
   toast('✅', `${toAdd.length} equipo${toAdd.length!==1?'s':''} importado${toAdd.length!==1?'s':''}. Recuerda Guardar Todo.`);
 }
 function downloadTemplate(){
-  if(typeof XLSX !== 'undefined'){
-    const data = [
-      ['IP', 'PROCESO', 'SO', 'USUARIO', 'PASSWORD'],
-      ['192.168.49.100', 'AJUSTES_SV', 'LINUX', 'ugenome', 'UbuntuCyb2026$'],
-      ['192.168.49.101', 'RPACNOS', 'LINUX', 'ugenome', 'UbuntuCyb2026$'],
-      ['192.168.51.200', 'VARIADO', 'WINDOWS', 'Sistemas', 'Cyber123']
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'CyberIPS');
-    XLSX.writeFile(wb, 'plantilla_cyberips.xlsx');
-    toast('📄','Plantilla Excel (.xlsx) descargada');
-  } else {
-    const csv = '\uFEFF' + [
-      'IP;PROCESO;SO;USUARIO;PASSWORD',
-      '192.168.49.100;AJUSTES_SV;LINUX;ugenome;UbuntuCyb2026$',
-      '192.168.49.101;RPACNOS;LINUX;ugenome;UbuntuCyb2026$',
-      '192.168.51.200;VARIADO;WINDOWS;Sistemas;Cyber123',
-    ].join('\r\n');
-    const a = Object.assign(document.createElement('a'),{
-      href: URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),
-      download: 'plantilla_cyberips.csv'
-    });
-    a.click();
-    toast('📄','Plantilla Excel descargada');
-  }
+  const csvContent = '\uFEFF' + [
+    'IP;PROCESO;SO;USUARIO;PASSWORD',
+    '192.168.49.100;AJUSTES_SV;LINUX;ugenome;UbuntuCyb2026$',
+    '192.168.49.101;RPACNOS;LINUX;ugenome;UbuntuCyb2026$',
+    '192.168.51.200;VARIADO;WINDOWS;Sistemas;Cyber123'
+  ].join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'plantilla_cyberips.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('📄','Plantilla descargada');
 }
 /* ===== END CSV IMPORT ===== */
 
