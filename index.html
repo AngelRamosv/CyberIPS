@@ -1,512 +1,1569 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>CyberIPs — Panel de Infraestructura</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --bg:#060608;--bg2:#0d0d12;--bg3:#13131a;
-  --surf:#1a1a24;--surf2:#22222e;
-  --brd:#2a2a3a;--brd2:#3a3a50;
-  --neon:#b8ff3c;--neon2:#39ff85;
-  --pur:#9b5cf6;--pink:#f43f8d;
-  --cyan:#22d3ee;--red:#ff3b5c;--yel:#ffd93d;
-  --txt:#e4e4f0;--txt2:#8888aa;--txt3:#555570;
-  --r:10px;--rl:16px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 10% 0%,rgba(155,92,246,.07),transparent),radial-gradient(ellipse 50% 60% at 90% 100%,rgba(184,255,60,.05),transparent);pointer-events:none;z-index:0}
-.app{position:relative;z-index:1}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>CyberIPs — Panel de Infraestructura</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060608;
+      --bg2: #0d0d12;
+      --bg3: #13131a;
+      --surf: #1a1a24;
+      --surf2: #22222e;
+      --brd: #2a2a3a;
+      --brd2: #3a3a50;
+      --neon: #b8ff3c;
+      --neon2: #39ff85;
+      --pur: #9b5cf6;
+      --pink: #f43f8d;
+      --cyan: #22d3ee;
+      --red: #ff3b5c;
+      --yel: #ffd93d;
+      --txt: #e4e4f0;
+      --txt2: #8888aa;
+      --txt3: #555570;
+      --r: 10px;
+      --rl: 16px;
+    }
 
-/* HEADER */
-header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid var(--brd);background:rgba(6,6,8,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
-.hlogo{width:40px;height:40px;background:#000;border:1.5px solid rgba(184,255,60,.35);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 14px rgba(184,255,60,.15)}
-.htitle h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.htitle h1 span{color:var(--neon)}
-.htitle p{font-size:11px;color:var(--txt2);margin-top:1px}
-.hleft{display:flex;align-items:center;gap:12px}
-.hright{display:flex;align-items:center;gap:10px}
-.spill{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.2);border-radius:100px;font-size:11px;font-weight:600;color:var(--neon2);letter-spacing:.5px}
-.sdot{width:6px;height:6px;background:var(--neon2);border-radius:50%;animation:pulse 2s infinite}
-#lastSaved{font-size:11px;color:var(--txt3)}
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* MAIN */
-main{padding:24px 28px;max-width:1400px;margin:0 auto}
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden
+    }
 
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.sc{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);padding:18px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
-.sc:hover{border-color:var(--brd2);transform:translateY(-2px)}
-.sc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02),transparent);pointer-events:none}
-.si{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px}
-.si.g{background:rgba(57,255,133,.12);box-shadow:0 0 10px rgba(57,255,133,.15)}
-.si.p{background:rgba(155,92,246,.12);box-shadow:0 0 10px rgba(155,92,246,.15)}
-.si.k{background:rgba(244,63,141,.12);box-shadow:0 0 10px rgba(244,63,141,.15)}
-.si.c{background:rgba(34,211,238,.12);box-shadow:0 0 10px rgba(34,211,238,.15)}
-.sl{font-size:10px;font-weight:600;letter-spacing:1.1px;color:var(--txt2);text-transform:uppercase;margin-bottom:3px}
-.sv{font-size:26px;font-weight:700;letter-spacing:-1px}
-.sv.g{color:var(--neon2)}.sv.p{color:var(--pur)}.sv.k{color:var(--pink)}.sv.c{color:var(--cyan)}
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 10% 0%, rgba(155, 92, 246, .07), transparent), radial-gradient(ellipse 50% 60% at 90% 100%, rgba(184, 255, 60, .05), transparent);
+      pointer-events: none;
+      z-index: 0
+    }
 
-/* TOOLBAR */
-.tb{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.sb{position:relative;flex:1;min-width:200px}
-.sb input{width:100%;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:9px 12px 9px 36px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s}
-.sb input:focus{border-color:var(--neon);box-shadow:0 0 0 3px rgba(184,255,60,.1)}
-.sb input::placeholder{color:var(--txt3)}
-.si2{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:13px;pointer-events:none}
-select.fs{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:9px 28px 9px 12px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238888aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
-select.fs option{background:var(--bg3)}
-select.fs:focus{border-color:var(--neon)}
-.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--r);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;white-space:nowrap}
-.btn-p{background:#1e1e2a;color:var(--txt);border:1px solid var(--brd2);box-shadow:none}
-.btn-p:hover{background:#28283a;border-color:var(--txt3);transform:translateY(-1px)}
-.btn-g{background:transparent;border:1px solid var(--brd2);color:var(--txt2)}
-.btn-g:hover{border-color:var(--pur);color:var(--pur);background:rgba(155,92,246,.08)}
-.btn-a{background:rgba(155,92,246,.12);border:1px solid rgba(155,92,246,.3);color:var(--pur)}
-.btn-a:hover{background:rgba(155,92,246,.22);border-color:var(--pur);transform:translateY(-1px)}
+    .app {
+      position: relative;
+      z-index: 1
+    }
 
-/* TABLE WRAPPER */
-.tw{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);overflow:hidden;animation:fadeUp .4s ease}
-.thb{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--brd);background:var(--bg3)}
-.tt{font-size:12px;font-weight:600;color:var(--txt2);display:flex;align-items:center;gap:8px}
-.tc{background:rgba(184,255,60,.1);border:1px solid rgba(184,255,60,.2);color:var(--neon);font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px}
-.emb{display:none;align-items:center;gap:8px;padding:9px 18px;background:rgba(184,255,60,.04);border-bottom:1px solid rgba(184,255,60,.12);font-size:12px;color:var(--neon);font-weight:500}
-.emb.on{display:flex}
-.emb span{margin-left:auto;color:var(--txt2)}
-.ts{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{padding:11px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3);border-bottom:1px solid var(--brd);background:var(--bg2);white-space:nowrap}
-thead th:first-child{padding-left:18px}
-thead th:last-child{padding-right:18px}
-tbody tr{border-bottom:1px solid var(--brd);transition:background .15s}
-tbody tr:last-child{border-bottom:none}
-tbody tr:hover{background:rgba(255,255,255,.025)}
-tbody tr.editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,255,60,.15)}
-tbody td{padding:11px 14px;vertical-align:middle}
-tbody td:first-child{padding-left:18px}
-tbody td:last-child{padding-right:18px}
-.ri{font-family:'Space Mono',monospace;font-size:11px;color:var(--txt3);min-width:28px}
-.mn{font-weight:600;color:var(--txt);font-size:13px}
-.ip-b{font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);padding:3px 9px;border-radius:6px;display:inline-block;letter-spacing:.4px}
-.pb{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;display:inline-block;letter-spacing:.3px}
-.p-aj{background:rgba(155,92,246,.12);color:var(--pur);border:1px solid rgba(155,92,246,.2)}
-.p-fa{background:rgba(255,59,92,.1);color:var(--red);border:1px solid rgba(255,59,92,.2)}
-.p-or{background:rgba(255,217,61,.1);color:var(--yel);border:1px solid rgba(255,217,61,.2)}
-.p-re{background:rgba(244,63,141,.1);color:var(--pink);border:1px solid rgba(244,63,141,.2)}
-.p-li{background:rgba(100,100,120,.15);color:var(--txt2);border:1px solid var(--brd2)}
-.p-ma{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
-.p-va{background:rgba(184,255,60,.08);color:var(--neon);border:1px solid rgba(184,255,60,.15)}
-.p-ok{background:rgba(57,255,133,.08);color:var(--neon2);border:1px solid rgba(57,255,133,.15)}
-.p-de{background:rgba(100,100,120,.12);color:var(--txt2);border:1px solid var(--brd)}
-.ob{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px}
-.o-l{background:rgba(255,165,0,.08);color:#ffaa33;border:1px solid rgba(255,165,0,.15)}
-.o-w{background:rgba(34,111,238,.1);color:#5599ff;border:1px solid rgba(34,111,238,.2)}
-.o-x{background:rgba(100,100,120,.12);color:var(--txt2);border:1px solid var(--brd)}
-.ec{cursor:pointer}
-.ci{background:var(--bg3);border:1px solid var(--neon);border-radius:6px;padding:4px 8px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;width:100%;box-shadow:0 0 0 2px rgba(184,255,60,.1)}
-.ci.mono{font-family:'Space Mono',monospace;font-size:12px}
-.cs{background:var(--bg3);border:1px solid var(--neon);border-radius:6px;padding:4px 8px;color:var(--txt);font-family:inherit;font-size:12px;font-weight:600;outline:none;cursor:pointer;width:100%;appearance:none;box-shadow:0 0 0 2px rgba(184,255,60,.1)}
-.ra{display:flex;align-items:center;gap:5px;opacity:0;transition:opacity .15s}
-tbody tr:hover .ra,.ra.always{opacity:1}
-.ib{width:26px;height:26px;border-radius:5px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;color:var(--txt2)}
-.ib.eb:hover{background:rgba(184,255,60,.12);color:var(--neon)}
-.ib.sb:hover{background:rgba(57,255,133,.12);color:var(--neon2)}
-.ib.cb:hover{background:rgba(255,59,92,.12);color:var(--red)}
-.ib.db:hover{background:rgba(255,59,92,.12);color:var(--red)}
-.cdot{width:6px;height:6px;background:var(--neon);border-radius:50%;display:inline-block;margin-left:4px;box-shadow:0 0 5px var(--neon);animation:pulse 1.5s infinite}
-tbody tr.row-editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,255,60,.2)}
-.re-input{background:var(--bg3);border:1px solid var(--neon);border-radius:6px;padding:5px 8px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;width:100%;min-width:110px;box-shadow:0 0 0 2px rgba(184,255,60,.08)}
-.re-input.mono{font-family:'Space Mono',monospace;font-size:12px}
-.re-sel{background:var(--bg3);border:1px solid var(--neon);border-radius:6px;padding:5px 8px;color:var(--txt);font-family:inherit;font-size:12px;font-weight:600;outline:none;cursor:pointer;appearance:none;width:100%;box-shadow:0 0 0 2px rgba(184,255,60,.08)}
-.usr-b{font-family:'Space Mono',monospace;font-size:11px;color:#39ff85;background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.2);padding:3px 8px;border-radius:6px;display:inline-block}
-.pw-wrap{display:inline-flex;align-items:center;gap:4px}
-.pw-b{font-family:'Space Mono',monospace;font-size:11px;color:var(--txt2);background:rgba(100,100,120,.1);border:1px solid var(--brd);padding:3px 8px;border-radius:6px;letter-spacing:1px}
-.pw-toggle{background:transparent;border:none;cursor:pointer;color:var(--txt3);font-size:12px;padding:0 2px;line-height:1;transition:color .15s}
-.pw-toggle:hover{color:var(--txt)}
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--brd);
+      background: rgba(6, 6, 8, .9);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100
+    }
 
-/* ADD FORM */
-.af{display:none;background:var(--bg3);border-top:1px solid var(--brd);padding:14px 18px;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.af.on{display:flex}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fl{font-size:10px;font-weight:600;color:var(--txt3);letter-spacing:.8px;text-transform:uppercase}
-.fi{background:var(--surf2);border:1px solid var(--brd2);border-radius:8px;padding:7px 11px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;min-width:150px;transition:border-color .2s,box-shadow .2s}
-.fi:focus{border-color:var(--neon);box-shadow:0 0 0 2px rgba(184,255,60,.1)}
-.fi.mono{font-family:'Space Mono',monospace;font-size:12px}
-.fsel{background:var(--surf2);border:1px solid var(--brd2);border-radius:8px;padding:7px 26px 7px 11px;color:var(--txt);font-family:inherit;font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238888aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center}
-.fsel option{background:var(--bg3)}
-.fsel:focus{border-color:var(--neon)}
+    .hlogo {
+      width: 40px;
+      height: 40px;
+      background: #000;
+      border: 1.5px solid rgba(184, 255, 60, .35);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(184, 255, 60, .15)
+    }
 
-/* PAGINATION */
-.pag{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--brd);background:var(--bg3);font-size:12px;color:var(--txt2)}
-.pbs{display:flex;gap:4px}
-.pb2{width:29px;height:29px;border-radius:6px;border:1px solid var(--brd);background:transparent;color:var(--txt2);font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.pb2:hover:not(:disabled){border-color:var(--neon);color:var(--neon);background:rgba(184,255,60,.08)}
-.pb2.act{background:var(--neon);color:#000;border-color:var(--neon);font-weight:700}
-.pb2:disabled{opacity:.3;cursor:not-allowed}
+    .htitle h1 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.3px
+    }
 
-/* EMPTY */
-.emp{text-align:center;padding:50px 20px;color:var(--txt3)}
-.emp .ei{font-size:36px;margin-bottom:10px}
+    .htitle h1 span {
+      color: var(--neon)
+    }
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surf);border:1px solid rgba(57,255,133,.3);border-radius:var(--rl);padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;z-index:9999;transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.toast.on{transform:translateY(0);opacity:1;pointer-events:auto}
+    .htitle p {
+      font-size: 11px;
+      color: var(--txt2);
+      margin-top: 1px
+    }
 
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-/* IMPORT MODAL */
-.im-overlay{position:fixed;inset:0;background:rgba(0,0,0,.0);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;transition:background .2s}
-.im-overlay.on{display:flex;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
-.im-box{background:var(--bg3);border:1px solid var(--brd2);border-radius:var(--rl);width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:fadeUp .25s ease}
-.im-head{padding:20px 24px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.im-title{font-size:15px;font-weight:700;color:var(--txt)}
-.im-close{background:transparent;border:none;color:var(--txt2);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;transition:color .15s}
-.im-close:hover{color:var(--txt)}
-.im-summary{padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--brd)}
-.im-stat{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px}
-.im-stat.total{background:rgba(184,255,60,.08);color:var(--neon);border:1px solid rgba(184,255,60,.2)}
-.im-stat.new{background:rgba(57,255,133,.08);color:#39ff85;border:1px solid rgba(57,255,133,.2)}
-.im-stat.dup{background:rgba(255,214,61,.08);color:var(--yel);border:1px solid rgba(255,214,61,.2)}
-.im-stat.err{background:rgba(255,59,92,.08);color:var(--red);border:1px solid rgba(255,59,92,.2)}
-.im-body{overflow-y:auto;flex:1}
-.im-table{width:100%;border-collapse:collapse;font-size:12px}
-.im-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--txt2);text-transform:uppercase;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg3)}
-.im-table td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-family:'Space Mono',monospace;font-size:11px}
-.im-table tr.is-new td:first-child{border-left:3px solid #39ff85}
-.im-table tr.is-dup td:first-child{border-left:3px solid var(--yel)}
-.im-table tr.is-err td:first-child{border-left:3px solid var(--red)}
-.im-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.04em}
-.im-badge.n{background:rgba(57,255,133,.15);color:#39ff85}
-.im-badge.d{background:rgba(255,214,61,.15);color:var(--yel)}
-.im-badge.e{background:rgba(255,59,92,.15);color:var(--red)}
-.im-foot{padding:16px 24px;border-top:1px solid var(--brd);display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
-.im-note{font-size:11px;color:var(--txt2);flex:1}
+    .hleft {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .hright {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
 
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:3px}
-@media(max-width:900px){header,main{padding:14px 16px}.stats{grid-template-columns:repeat(2,1fr)}}
-</style>
-</head>
-<body>
-<div class="app">
+    .spill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(57, 255, 133, .08);
+      border: 1px solid rgba(57, 255, 133, .2);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neon2);
+      letter-spacing: .5px
+    }
 
-<header>
-  <div class="hleft">
-    <div class="hlogo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="3" width="20" height="14" rx="2" stroke="#b8ff3c" stroke-width="1.6"/>
-        <line x1="8" y1="21" x2="16" y2="21" stroke="#9b5cf6" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="12" y1="17" x2="12" y2="21" stroke="#9b5cf6" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="htitle">
-      <h1>Cyber<span>IPs</span> Panel</h1>
-      <p>Gestión de infraestructura interna · Edición en tiempo real</p>
-    </div>
-  </div>
-  <div class="hright">
-    <div id="lastSaved"></div>
-  </div>
-</header>
+    .sdot {
+      width: 6px;
+      height: 6px;
+      background: var(--neon2);
+      border-radius: 50%;
+      animation: pulse 2s infinite
+    }
 
-<main>
-  <div class="stats">
-    <div class="sc"><div class="si p">💻</div><div class="sl">Total Equipos</div><div class="sv p" id="sT">0</div></div>
-    <div class="sc"><div class="si g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="13" rx="2" stroke="#39ff85" stroke-width="1.8"/><path d="M7 9l3 3-3 3" stroke="#39ff85" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="17" y2="15" stroke="#39ff85" stroke-width="1.8" stroke-linecap="round"/></svg></div><div class="sl">Linux</div><div class="sv g" id="sL">0</div></div>
-    <div class="sc"><div class="si c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1" fill="#5599ff" opacity=".9"/><rect x="13" y="3" width="8" height="8" rx="1" fill="#5599ff" opacity=".7"/><rect x="3" y="13" width="8" height="8" rx="1" fill="#5599ff" opacity=".7"/><rect x="13" y="13" width="8" height="8" rx="1" fill="#5599ff" opacity=".9"/></svg></div><div class="sl">Windows</div><div class="sv c" id="sW">0</div></div>
-    <div class="sc"><div class="si k">⚠️</div><div class="sl">Sin Proceso</div><div class="sv k" id="sI">0</div></div>
-  </div>
+    #lastSaved {
+      font-size: 11px;
+      color: var(--txt3)
+    }
 
-  <div class="tb">
-    <div class="sb">
-      <span class="si2">🔍</span>
-      <input id="q" type="text" placeholder="Buscar por nombre, IP o proceso…" oninput="render()"/>
-    </div>
-    <select class="fs" id="fos" onchange="render()">
-      <option value="">Todos los SO</option>
-      <option value="LINUX">🐧 Linux</option>
-      <option value="WINDOWS">🪟 Windows</option>
-    </select>
-    <select class="fs" id="fpr" onchange="render()">
-      <option value="">TODOS LOS PROCESOS</option>
-    </select>
-    <button class="btn btn-a" onclick="toggleForm()">＋ Agregar Equipo</button>
-    <button class="btn btn-p" onclick="saveAll()">💾 Guardar Todo</button>
-    <button class="btn btn-g" onclick="openImport()" style="background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25);color:var(--cyan)">⬆ Importar CSV</button>
-    <button class="btn btn-g" onclick="downloadTemplate()" style="font-size:11px;padding:7px 12px" title="Descargar plantilla CSV para Excel">📄 Plantilla</button>
-    <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="handleFile(event)"/>
-  </div>
+    /* MAIN */
+    main {
+      padding: 24px 28px;
+      max-width: 1400px;
+      margin: 0 auto
+    }
 
-  <div class="tw">
-    <div class="thb">
-      <div class="tt">EQUIPOS REGISTRADOS <span class="tc" id="cnt">0</span></div>
-      <button class="btn btn-g" style="padding:5px 11px;font-size:11px" onclick="exportCSV()">⬇ CSV</button>
-    </div>
-    <div id="ebar" class="emb">✏️ <strong>Modo edición</strong> — Haz clic en cualquier celda para editar<span id="chg">0 cambios</span></div>
-    <div id="addForm" class="af">
-      <div class="fg"><label class="fl">IP</label><input class="fi mono" id="nI" placeholder="192.168.x.x"/></div>
-      <div class="fg"><label class="fl">Proceso</label><input class="fi" id="nP" placeholder="ej: AJUSTES_SV"/></div>
-      <div class="fg"><label class="fl">SO</label>
-        <select class="fsel" id="nO"><option value="LINUX">LINUX</option><option value="WINDOWS">WINDOWS</option></select>
-      </div>
-      <div class="fg"><label class="fl">Usuario</label><input class="fi" id="nU" placeholder="ugenome"/></div>
-      <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="nPW" placeholder="••••••"/></div>
-      <div class="fg" style="margin-top:auto"><button class="btn btn-p" onclick="addRow()" style="height:36px">Agregar</button></div>
-      <div class="fg" style="margin-top:auto"><button class="btn btn-g" onclick="toggleForm()" style="height:36px">Cancelar</button></div>
-    </div>
-    <div class="ts"><table id="tbl">
-      <thead><tr>
-        <th>#</th><th>DIRECCIÓN IP</th><th>PROCESO</th><th>SO</th><th>USUARIO</th><th>CONTRASEÑA</th><th>ACCIONES</th>
-      </tr></thead>
-      <tbody id="tb"></tbody>
-    </table></div>
-    <div id="emp" class="emp" style="display:none"><div class="ei">🔍</div><p>Sin resultados</p></div>
-    <div class="pag">
-      <div id="pi">0 equipos</div>
-      <div class="pbs" id="pbs"></div>
-    </div>
-  </div>
-</main>
-</div>
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px
+    }
 
-<!-- IMPORT MODAL -->
-<div class="im-overlay" id="imOverlay" onclick="closeImport(event)">
-  <div class="im-box" onclick="event.stopPropagation()">
-    <div class="im-head">
-      <div class="im-title">⬆ Importar IPs desde CSV</div>
-      <button class="im-close" onclick="closeImport()">✕</button>
-    </div>
-    <div class="im-summary" id="imSummary"></div>
-    <div class="im-body">
-      <table class="im-table">
-        <thead><tr>
-          <th>IP</th><th>PROCESO</th><th>SO</th><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th>
-        </tr></thead>
-        <tbody id="imTbody"></tbody>
-      </table>
-    </div>
-    <div class="im-foot">
-      <span class="im-note" id="imNote">Solo se importarán las filas nuevas (verdes). Las amarillas ya existen.</span>
-      <button class="btn btn-g" onclick="closeImport()" style="padding:8px 16px">Cancelar</button>
-      <button class="btn btn-p" id="imConfirmBtn" onclick="confirmImport(false)" style="padding:8px 18px">✅ Importar nuevas</button>
-      <button class="btn" id="imAllBtn" onclick="confirmImport(true)" style="padding:8px 14px;background:rgba(255,214,61,.1);border:1px solid rgba(255,214,61,.25);color:var(--yel);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">+ incluir duplicadas</button>
-    </div>
-  </div>
-</div>
+    .sc {
+      background: var(--surf);
+      border: 1px solid var(--brd);
+      border-radius: var(--rl);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .2s, transform .2s
+    }
 
-<div class="toast" id="toast"><span id="ti">✅</span><span id="tm">Guardado</span></div>
+    .sc:hover {
+      border-color: var(--brd2);
+      transform: translateY(-2px)
+    }
 
-<script>
-const KEY='cyberips_v2';
-const PG=20;
-let data=[], pending={}, page=1, nid=200, ae=null;
+    .sc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .02), transparent);
+      pointer-events: none
+    }
 
-const DEF=[
-  {id:1,m:'100 (Vix33)',ip:'192.168.49.77',p:'AJUSTES_SV',o:'LINUX'},
-  {id:2,m:'101 (Vix34)',ip:'192.168.49.78',p:'AJUSTES_SV',o:'LINUX'},
-  {id:3,m:'103 (Vix37)',ip:'192.168.49.81',p:'AJUSTES_SV',o:'LINUX'},
-  {id:4,m:'104 (Vix46)',ip:'192.168.51.91',p:'AJUSTES_SV',o:'LINUX'},
-  {id:5,m:'105 (Vix35)',ip:'192.168.49.79',p:'AJUSTES_SV',o:'LINUX'},
-  {id:6,m:'106 (vix38)',ip:'192.168.49.82',p:'AJUSTES_SV',o:'LINUX'},
-  {id:7,m:'107 (vix39)',ip:'192.168.49.83',p:'AJUSTES_SV',o:'LINUX'},
-  {id:8,m:'108 (vix40)',ip:'192.168.49.84',p:'AJUSTES_SV',o:'LINUX'},
-  {id:9,m:'109 (vix41)',ip:'192.168.49.85',p:'AJUSTES_SV',o:'LINUX'},
-  {id:10,m:'110 (vix42)',ip:'192.168.49.86',p:'AJUSTES_SV',o:'LINUX'},
-  {id:11,m:'111 (vix43)',ip:'192.168.49.87',p:'AJUSTES_SV',o:'LINUX'},
-  {id:12,m:'112 (vix44)',ip:'192.168.49.88',p:'AJUSTES_SV',o:'LINUX'},
-  {id:13,m:'113 (vix45)',ip:'192.168.49.89',p:'AJUSTES_SV',o:'LINUX'},
-  {id:14,m:'114 (vix36)',ip:'192.168.49.80',p:'AJUSTES_SV',o:'LINUX'},
-  {id:15,m:'115 (vix29)',ip:'192.168.49.32',p:'AJUSTES_SV',o:'LINUX'},
-  {id:16,m:'116 (vix30)',ip:'192.168.49.33',p:'AJUSTES_SV',o:'LINUX'},
-  {id:17,m:'117 (vix22)',ip:'192.168.49.34',p:'AJUSTES_SV',o:'LINUX'},
-  {id:18,m:'118 (vix23)',ip:'192.168.49.35',p:'AJUSTES_SV',o:'LINUX'},
-  {id:19,m:'117 (vix24)',ip:'192.168.49.36',p:'AJUSTES_SV',o:'LINUX'},
-  {id:20,m:'116 (vix25)',ip:'192.168.49.37',p:'AJUSTES_SV',o:'LINUX'},
-  {id:21,m:'115 (vix26)',ip:'192.168.49.57',p:'AJUSTES_SV',o:'LINUX'},
-  {id:22,m:'113 (vix27)',ip:'192.168.49.58',p:'Retencion',o:'LINUX'},
-  {id:23,m:'112 (vix28)',ip:'192.168.49.40',p:'Libre',o:'WINDOWS'},
-  {id:24,m:'111 (vix31)',ip:'192.168.49.43',p:'Retencion',o:'LINUX'},
-  {id:25,m:'114 (vix21)',ip:'192.168.49.90',p:'AJUSTES_SV',o:'LINUX'},
-  {id:26,m:'101 (vix47)',ip:'192.168.49.91',p:'AJUSTES_SV',o:'LINUX'},
-  {id:27,m:'102 (vix48)',ip:'192.168.49.92',p:'AJUSTES_SV',o:'LINUX'},
-  {id:28,m:'103 (vix49)',ip:'192.168.49.93',p:'AJUSTES_SV',o:'LINUX'},
-  {id:29,m:'104 (prog24)',ip:'192.168.49.38',p:'NINGUNO',o:'NO'},
-  {id:30,m:'107 (Mariana1)',ip:'192.168.51.11',p:'MARIANA',o:'WINDOWS'},
-  {id:31,m:'108 (Mariana2)',ip:'192.168.51.12',p:'MARIANA',o:'WINDOWS'},
-  {id:32,m:'109 (prog18)',ip:'192.168.49.71',p:'AJUSTES_SV',o:'LINUX'},
-  {id:33,m:'110 (prog19)',ip:'192.168.49.72',p:'AJUSTES_SV',o:'LINUX'},
-  {id:34,m:'111 (prog20)',ip:'192.168.49.73',p:'AJUSTES_SV',o:'LINUX'},
-  {id:35,m:'112 (prog21)',ip:'192.168.49.74',p:'AJUSTES_SV',o:'LINUX'},
-  {id:36,m:'113 (prog1)',ip:'192.168.51.176',p:'AJUSTES_SV',o:'LINUX'},
-  {id:37,m:'114 (prog22)',ip:'192.168.49.75',p:'AJUSTES_SV',o:'LINUX'},
-  {id:38,m:'115 (prog23)',ip:'192.168.49.76',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:39,m:'116 (prog25)',ip:'192.168.49.69',p:'AJUSTES_SV',o:'LINUX'},
-  {id:40,m:'117 (prog26)',ip:'192.168.49.68',p:'AJUSTES_SV',o:'LINUX'},
-  {id:41,m:'118 (prog3)',ip:'192.168.51.178',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:42,m:'119 (prog17)',ip:'192.168.49.67',p:'AJUSTES_SV',o:'LINUX'},
-  {id:43,m:'120 (vix32)',ip:'192.168.49.76',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:44,m:'121 (Equipo14)',ip:'192.168.51.111',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:45,m:'122 (Equipo13)',ip:'192.168.51.108',p:'AJUSTES_SV',o:'LINUX'},
-  {id:46,m:'123 (Equipo12)',ip:'192.168.51.104',p:'FALLAS REPORTADAS',o:'WINDOWS'},
-  {id:47,m:'124 (Equipo11)',ip:'192.168.51.101',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:48,m:'125 (Equipo10)',ip:'192.168.51.96',p:'AJUSTES_SV',o:'LINUX'},
-  {id:49,m:'126 (Equipo9)',ip:'192.168.51.95',p:'ORDENES_DUPLICADAS',o:'WINDOWS'},
-  {id:50,m:'127 (Equipo19)',ip:'192.168.49.94',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:51,m:'128 (Equipo18)',ip:'192.168.49.178',p:'AJUSTES_SV',o:'WINDOWS'},
-  {id:52,m:'129 (Equipo8)',ip:'192.168.51.44',p:'AJUSTES_SV',o:'LINUX'},
-  {id:53,m:'130 (Equipo7)',ip:'192.168.51.30',p:'AJUSTES_SV',o:'LINUX'},
-  {id:54,m:'131 (Equipo6)',ip:'192.168.51.28',p:'AJUSTES_SV',o:'LINUX'},
-  {id:55,m:'132 (Equipo3)',ip:'192.168.51.16',p:'AJUSTES_SV',o:'LINUX'},
-  {id:56,m:'133 (Equipo4)',ip:'192.168.51.17',p:'AJUSTES_SV',o:'LINUX'},
-  {id:57,m:'134 (Equipo5)',ip:'192.168.51.20',p:'AJUSTES_SV',o:'LINUX'},
-  {id:58,m:'135 (Equipo2)',ip:'192.168.51.14',p:'AJUSTES_SV',o:'LINUX'},
-  {id:59,m:'136 (Equipo1)',ip:'192.168.51.13',p:'AJUSTES_SV',o:'LINUX'},
-  {id:60,m:'192.168.61.4',ip:'192.168.61.4',p:'variado',o:'WINDOWS'},
-  {id:61,m:'192.168.61.5',ip:'192.168.61.5',p:'variado',o:'WINDOWS'},
-  {id:62,m:'192.168.61.18',ip:'192.168.61.18',p:'variado',o:'WINDOWS'},
-  {id:63,m:'192.168.61.23',ip:'192.168.61.23',p:'variado',o:'WINDOWS'},
-  {id:64,m:'192.168.61.28',ip:'192.168.61.28',p:'variado',o:'WINDOWS'},
-  {id:65,m:'192.168.61.30',ip:'192.168.61.30',p:'variado',o:'WINDOWS'},
-  {id:66,m:'192.168.61.31',ip:'192.168.61.31',p:'variado',o:'WINDOWS'},
-  {id:67,m:'192.168.61.42',ip:'192.168.61.42',p:'ok cliente',o:'WINDOWS'},
-  {id:68,m:'192.168.61.43',ip:'192.168.61.43',p:'variado',o:'WINDOWS'},
-  {id:69,m:'192.168.61.45',ip:'192.168.61.45',p:'variado',o:'WINDOWS'},
-  {id:70,m:'192.168.61.50',ip:'192.168.61.50',p:'variado',o:'WINDOWS'},
-  {id:71,m:'192.168.61.51',ip:'192.168.61.51',p:'variado',o:'WINDOWS'},
-  {id:72,m:'prog29',ip:'192.168.49.67',p:'ok cliente',o:'LINUX'},
-  {id:73,m:'prog3',ip:'192.168.49.68',p:'ok cliente',o:'LINUX'},
-  {id:74,m:'prog25',ip:'192.168.49.69',p:'ok cliente',o:'LINUX'},
-  {id:75,m:'prog17',ip:'192.168.49.70',p:'ok cliente',o:'LINUX'},
-  {id:76,m:'prog18',ip:'192.168.49.71',p:'ok cliente',o:'LINUX'},
-  {id:77,m:'prog19',ip:'192.168.49.72',p:'ok cliente',o:'LINUX'},
-  {id:78,m:'prog20',ip:'192.168.49.73',p:'ok cliente',o:'LINUX'},
-  {id:79,m:'prog21',ip:'192.168.49.74',p:'ok cliente',o:'LINUX'},
-  {id:80,m:'prog22',ip:'192.168.49.75',p:'ok cliente',o:'LINUX'},
-  {id:81,m:'prog23',ip:'192.168.49.105',p:'ok cliente',o:'LINUX'},
-  {id:82,m:'prog1',ip:'192.168.51.176',p:'ok cliente',o:'LINUX'},
-  {id:83,m:'Prog2',ip:'192.168.51.177',p:'ok cliente',o:'LINUX'},
-  {id:84,m:'Prog3',ip:'192.168.51.178',p:'ok cliente',o:'LINUX'},
-  {id:85,m:'Prog4',ip:'192.168.51.189',p:'ok cliente',o:'LINUX'},
-  {id:86,m:'Prog5',ip:'192.168.51.190',p:'ok cliente',o:'LINUX'},
-  {id:87,m:'Prog6',ip:'192.168.51.191',p:'ok cliente',o:'LINUX'},
-  {id:88,m:'Prog7',ip:'192.168.51.192',p:'ok cliente',o:'LINUX'},
-  {id:89,m:'Prog8',ip:'192.168.51.193',p:'ok cliente',o:'LINUX'},
-  {id:90,m:'Prog9',ip:'192.168.51.194',p:'ok cliente',o:'LINUX'},
-  {id:91,m:'Prog10',ip:'192.168.51.195',p:'ok cliente',o:'LINUX'},
-  {id:92,m:'Prog11',ip:'192.168.51.201',p:'ok cliente',o:'LINUX'},
-  {id:93,m:'Prog12',ip:'192.168.51.202',p:'ok cliente',o:'LINUX'},
-  {id:94,m:'Prog13',ip:'192.168.51.203',p:'ok cliente',o:'LINUX'},
-  {id:95,m:'Prog14',ip:'192.168.51.204',p:'ok cliente',o:'LINUX'},
-  {id:96,m:'Prog27',ip:'192.168.51.220',p:'variado',o:'LINUX'},
-  {id:97,m:'Prog28',ip:'192.168.51.221',p:'variado',o:'LINUX'},
-];
+    .si {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      margin-bottom: 10px
+    }
 
-const API = '/api/data';
+    .si.g {
+      background: rgba(57, 255, 133, .12);
+      box-shadow: 0 0 10px rgba(57, 255, 133, .15)
+    }
 
-async function init(){
-  try{
-    const res = await fetch(API);
-    if(res.ok){
-      const json = await res.json();
-      if(Array.isArray(json) && json.length > 0){
-        data = json;
-        nid = Math.max(...data.map(d=>d.id)) + 1;
-      } else {
-        // servidor sin datos aún: subir los defaults
-        data = [...DEF];
-        await _pushData();
+    .si.p {
+      background: rgba(155, 92, 246, .12);
+      box-shadow: 0 0 10px rgba(155, 92, 246, .15)
+    }
+
+    .si.k {
+      background: rgba(244, 63, 141, .12);
+      box-shadow: 0 0 10px rgba(244, 63, 141, .15)
+    }
+
+    .si.c {
+      background: rgba(34, 211, 238, .12);
+      box-shadow: 0 0 10px rgba(34, 211, 238, .15)
+    }
+
+    .sl {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.1px;
+      color: var(--txt2);
+      text-transform: uppercase;
+      margin-bottom: 3px
+    }
+
+    .sv {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -1px
+    }
+
+    .sv.g {
+      color: var(--neon2)
+    }
+
+    .sv.p {
+      color: var(--pur)
+    }
+
+    .sv.k {
+      color: var(--pink)
+    }
+
+    .sv.c {
+      color: var(--cyan)
+    }
+
+    /* TOOLBAR */
+    .tb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap
+    }
+
+    .sb {
+      position: relative;
+      flex: 1;
+      min-width: 200px
+    }
+
+    .sb input {
+      width: 100%;
+      background: var(--surf);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      padding: 9px 12px 9px 36px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s
+    }
+
+    .sb input:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(184, 255, 60, .1)
+    }
+
+    .sb input::placeholder {
+      color: var(--txt3)
+    }
+
+    .si2 {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--txt3);
+      font-size: 13px;
+      pointer-events: none
+    }
+
+    select.fs {
+      background: var(--surf);
+      border: 1px solid var(--brd);
+      border-radius: var(--r);
+      padding: 9px 28px 9px 12px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238888aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center
+    }
+
+    select.fs option {
+      background: var(--bg3)
+    }
+
+    select.fs:focus {
+      border-color: var(--neon)
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: var(--r);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .btn-p {
+      background: #1e1e2a;
+      color: var(--txt);
+      border: 1px solid var(--brd2);
+      box-shadow: none
+    }
+
+    .btn-p:hover {
+      background: #28283a;
+      border-color: var(--txt3);
+      transform: translateY(-1px)
+    }
+
+    .btn-g {
+      background: transparent;
+      border: 1px solid var(--brd2);
+      color: var(--txt2)
+    }
+
+    .btn-g:hover {
+      border-color: var(--pur);
+      color: var(--pur);
+      background: rgba(155, 92, 246, .08)
+    }
+
+    .btn-a {
+      background: rgba(155, 92, 246, .12);
+      border: 1px solid rgba(155, 92, 246, .3);
+      color: var(--pur)
+    }
+
+    .btn-a:hover {
+      background: rgba(155, 92, 246, .22);
+      border-color: var(--pur);
+      transform: translateY(-1px)
+    }
+
+    /* TABLE WRAPPER */
+    .tw {
+      background: var(--surf);
+      border: 1px solid var(--brd);
+      border-radius: var(--rl);
+      overflow: hidden;
+      animation: fadeUp .4s ease
+    }
+
+    .thb {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--brd);
+      background: var(--bg3)
+    }
+
+    .tt {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--txt2);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .tc {
+      background: rgba(184, 255, 60, .1);
+      border: 1px solid rgba(184, 255, 60, .2);
+      color: var(--neon);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 100px
+    }
+
+    .emb {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: rgba(184, 255, 60, .04);
+      border-bottom: 1px solid rgba(184, 255, 60, .12);
+      font-size: 12px;
+      color: var(--neon);
+      font-weight: 500
+    }
+
+    .emb.on {
+      display: flex
+    }
+
+    .emb span {
+      margin-left: auto;
+      color: var(--txt2)
+    }
+
+    .ts {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px
+    }
+
+    thead th {
+      padding: 11px 14px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--txt3);
+      border-bottom: 1px solid var(--brd);
+      background: var(--bg2);
+      white-space: nowrap
+    }
+
+    thead th:first-child {
+      padding-left: 18px
+    }
+
+    thead th:last-child {
+      padding-right: 18px
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--brd);
+      transition: background .15s
+    }
+
+    tbody tr:last-child {
+      border-bottom: none
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, .025)
+    }
+
+    tbody tr.editing {
+      background: rgba(184, 255, 60, .04);
+      outline: 1px solid rgba(184, 255, 60, .15)
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      vertical-align: middle
+    }
+
+    tbody td:first-child {
+      padding-left: 18px
+    }
+
+    tbody td:last-child {
+      padding-right: 18px
+    }
+
+    .ri {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--txt3);
+      min-width: 28px
+    }
+
+    .mn {
+      font-weight: 600;
+      color: var(--txt);
+      font-size: 13px
+    }
+
+    .ip-b {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      background: rgba(34, 211, 238, .08);
+      border: 1px solid rgba(34, 211, 238, .15);
+      padding: 3px 9px;
+      border-radius: 6px;
+      display: inline-block;
+      letter-spacing: .4px
+    }
+
+    .pb {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      display: inline-block;
+      letter-spacing: .3px
+    }
+
+    .p-aj {
+      background: rgba(155, 92, 246, .12);
+      color: var(--pur);
+      border: 1px solid rgba(155, 92, 246, .2)
+    }
+
+    .p-fa {
+      background: rgba(255, 59, 92, .1);
+      color: var(--red);
+      border: 1px solid rgba(255, 59, 92, .2)
+    }
+
+    .p-or {
+      background: rgba(255, 217, 61, .1);
+      color: var(--yel);
+      border: 1px solid rgba(255, 217, 61, .2)
+    }
+
+    .p-re {
+      background: rgba(244, 63, 141, .1);
+      color: var(--pink);
+      border: 1px solid rgba(244, 63, 141, .2)
+    }
+
+    .p-li {
+      background: rgba(100, 100, 120, .15);
+      color: var(--txt2);
+      border: 1px solid var(--brd2)
+    }
+
+    .p-ma {
+      background: rgba(34, 211, 238, .1);
+      color: var(--cyan);
+      border: 1px solid rgba(34, 211, 238, .2)
+    }
+
+    .p-va {
+      background: rgba(184, 255, 60, .08);
+      color: var(--neon);
+      border: 1px solid rgba(184, 255, 60, .15)
+    }
+
+    .p-ok {
+      background: rgba(57, 255, 133, .08);
+      color: var(--neon2);
+      border: 1px solid rgba(57, 255, 133, .15)
+    }
+
+    .p-de {
+      background: rgba(100, 100, 120, .12);
+      color: var(--txt2);
+      border: 1px solid var(--brd)
+    }
+
+    .ob {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px
+    }
+
+    .o-l {
+      background: rgba(255, 165, 0, .08);
+      color: #ffaa33;
+      border: 1px solid rgba(255, 165, 0, .15)
+    }
+
+    .o-w {
+      background: rgba(34, 111, 238, .1);
+      color: #5599ff;
+      border: 1px solid rgba(34, 111, 238, .2)
+    }
+
+    .o-x {
+      background: rgba(100, 100, 120, .12);
+      color: var(--txt2);
+      border: 1px solid var(--brd)
+    }
+
+    .ec {
+      cursor: pointer
+    }
+
+    .ci {
+      background: var(--bg3);
+      border: 1px solid var(--neon);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      box-shadow: 0 0 0 2px rgba(184, 255, 60, .1)
+    }
+
+    .ci.mono {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px
+    }
+
+    .cs {
+      background: var(--bg3);
+      border: 1px solid var(--neon);
+      border-radius: 6px;
+      padding: 4px 8px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      appearance: none;
+      box-shadow: 0 0 0 2px rgba(184, 255, 60, .1)
+    }
+
+    .ra {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity .15s
+    }
+
+    tbody tr:hover .ra,
+    .ra.always {
+      opacity: 1
+    }
+
+    .ib {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all .15s;
+      color: var(--txt2)
+    }
+
+    .ib.eb:hover {
+      background: rgba(184, 255, 60, .12);
+      color: var(--neon)
+    }
+
+    .ib.sb:hover {
+      background: rgba(57, 255, 133, .12);
+      color: var(--neon2)
+    }
+
+    .ib.cb:hover {
+      background: rgba(255, 59, 92, .12);
+      color: var(--red)
+    }
+
+    .ib.db:hover {
+      background: rgba(255, 59, 92, .12);
+      color: var(--red)
+    }
+
+    .cdot {
+      width: 6px;
+      height: 6px;
+      background: var(--neon);
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 4px;
+      box-shadow: 0 0 5px var(--neon);
+      animation: pulse 1.5s infinite
+    }
+
+    tbody tr.row-editing {
+      background: rgba(184, 255, 60, .04);
+      outline: 1px solid rgba(184, 255, 60, .2)
+    }
+
+    .re-input {
+      background: var(--bg3);
+      border: 1px solid var(--neon);
+      border-radius: 6px;
+      padding: 5px 8px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      min-width: 110px;
+      box-shadow: 0 0 0 2px rgba(184, 255, 60, .08)
+    }
+
+    .re-input.mono {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px
+    }
+
+    .re-sel {
+      background: var(--bg3);
+      border: 1px solid var(--neon);
+      border-radius: 6px;
+      padding: 5px 8px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      width: 100%;
+      box-shadow: 0 0 0 2px rgba(184, 255, 60, .08)
+    }
+
+    .usr-b {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: #39ff85;
+      background: rgba(57, 255, 133, .08);
+      border: 1px solid rgba(57, 255, 133, .2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block
+    }
+
+    .pw-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .pw-b {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--txt2);
+      background: rgba(100, 100, 120, .1);
+      border: 1px solid var(--brd);
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 1px
+    }
+
+    .pw-toggle {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--txt3);
+      font-size: 12px;
+      padding: 0 2px;
+      line-height: 1;
+      transition: color .15s
+    }
+
+    .pw-toggle:hover {
+      color: var(--txt)
+    }
+
+    /* ADD FORM */
+    .af {
+      display: none;
+      background: var(--bg3);
+      border-top: 1px solid var(--brd);
+      padding: 14px 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end
+    }
+
+    .af.on {
+      display: flex
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .fl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--txt3);
+      letter-spacing: .8px;
+      text-transform: uppercase
+    }
+
+    .fi {
+      background: var(--surf2);
+      border: 1px solid var(--brd2);
+      border-radius: 8px;
+      padding: 7px 11px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      min-width: 150px;
+      transition: border-color .2s, box-shadow .2s
+    }
+
+    .fi:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 0 2px rgba(184, 255, 60, .1)
+    }
+
+    .fi.mono {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px
+    }
+
+    .fsel {
+      background: var(--surf2);
+      border: 1px solid var(--brd2);
+      border-radius: 8px;
+      padding: 7px 26px 7px 11px;
+      color: var(--txt);
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238888aa' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center
+    }
+
+    .fsel option {
+      background: var(--bg3)
+    }
+
+    .fsel:focus {
+      border-color: var(--neon)
+    }
+
+    /* PAGINATION */
+    .pag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      border-top: 1px solid var(--brd);
+      background: var(--bg3);
+      font-size: 12px;
+      color: var(--txt2)
+    }
+
+    .pbs {
+      display: flex;
+      gap: 4px
+    }
+
+    .pb2 {
+      width: 29px;
+      height: 29px;
+      border-radius: 6px;
+      border: 1px solid var(--brd);
+      background: transparent;
+      color: var(--txt2);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s
+    }
+
+    .pb2:hover:not(:disabled) {
+      border-color: var(--neon);
+      color: var(--neon);
+      background: rgba(184, 255, 60, .08)
+    }
+
+    .pb2.act {
+      background: var(--neon);
+      color: #000;
+      border-color: var(--neon);
+      font-weight: 700
+    }
+
+    .pb2:disabled {
+      opacity: .3;
+      cursor: not-allowed
+    }
+
+    /* EMPTY */
+    .emp {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--txt3)
+    }
+
+    .emp .ei {
+      font-size: 36px;
+      margin-bottom: 10px
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surf);
+      border: 1px solid rgba(57, 255, 133, .3);
+      border-radius: var(--rl);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateY(70px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+      pointer-events: none;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, .5)
+    }
+
+    .toast.on {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
       }
-    } else { throw new Error('bad response'); }
-  } catch(e){
-    // fallback: localStorage
-    console.warn('Servidor no disponible, usando localStorage:', e.message);
-    try{
-      const s = localStorage.getItem(KEY);
-      if(s){ data = JSON.parse(s); nid = Math.max(...data.map(d=>d.id))+1; }
-      else data = [...DEF];
-    } catch{ data = [...DEF]; }
-  }
-  stats(); render(); buildProcFilter();
-}
 
-function stats(){
-  const l=data.filter(d=>d.o==='LINUX').length;
-  const w=data.filter(d=>d.o==='WINDOWS').length;
-  const i=data.filter(d=>['libre','ninguno'].includes((d.p||'').toLowerCase())).length;
-  document.getElementById('sT').textContent=data.length;
-  document.getElementById('sL').textContent=l;
-  document.getElementById('sW').textContent=w;
-  document.getElementById('sI').textContent=i;
-}
+      50% {
+        opacity: .3
+      }
+    }
 
-function buildProcFilter(){
-  const sel = document.getElementById('fpr');
-  const cur = sel.value;
-  const procs = [...new Set(data.map(d=>d.p).filter(Boolean))].sort();
-  sel.innerHTML = '<option value="">TODOS LOS PROCESOS</option>' +
-    procs.map(p=>`<option value="${p}" ${p===cur?'selected':''}>${p.toUpperCase()}</option>`).join('');
-}
+    /* IMPORT MODAL */
+    .im-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .0);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background .2s
+    }
 
-function filtered(){
-  const q=document.getElementById('q').value.toLowerCase();
-  const os=document.getElementById('fos').value;
-  const pr=document.getElementById('fpr').value;
-  return data.filter(d=>{
-    const mq=!q||d.m.toLowerCase().includes(q)||d.ip.includes(q)||d.p.toLowerCase().includes(q);
-    return mq&&(!os||d.o===os)&&(!pr||d.p===pr);
-  });
-}
+    .im-overlay.on {
+      display: flex;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(5px)
+    }
 
-function pClass(p){
-  if(!p)return'p-de';
-  const u=p.toUpperCase();
-  if(u.includes('AJUSTES'))return'p-aj';
-  if(u.includes('FALLAS'))return'p-fa';
-  if(u.includes('ORDENES'))return'p-or';
-  if(u.includes('RETENCI'))return'p-re';
-  if(p==='Libre'||p==='NINGUNO'||p==='NO')return'p-li';
-  if(u.includes('MARIANA'))return'p-ma';
-  if(p==='variado')return'p-va';
-  if(p==='ok cliente')return'p-ok';
-  return'p-de';
-}
-function oClass(o){return o==='LINUX'?'o-l':o==='WINDOWS'?'o-w':'o-x'}
-function oIcon(o){
-  if(o==='LINUX') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M7 9l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
-  if(o==='WINDOWS') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px"><rect x="2" y="2" width="9" height="9" rx="1" fill="currentColor" opacity=".9"/><rect x="13" y="2" width="9" height="9" rx="1" fill="currentColor" opacity=".7"/><rect x="2" y="13" width="9" height="9" rx="1" fill="currentColor" opacity=".7"/><rect x="13" y="13" width="9" height="9" rx="1" fill="currentColor" opacity=".9"/></svg>`;
-  return '❓';
-}
-function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+    .im-box {
+      background: var(--bg3);
+      border: 1px solid var(--brd2);
+      border-radius: var(--rl);
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .6);
+      animation: fadeUp .25s ease
+    }
 
-function render(){
-  const f=filtered();
-  const tot=f.length;
-  const tp=Math.max(1,Math.ceil(tot/PG));
-  if(page>tp)page=tp;
-  const s=(page-1)*PG, e=Math.min(s+PG,tot);
-  const pg=f.slice(s,e);
-  document.getElementById('cnt').textContent=tot;
-  document.getElementById('pi').textContent=tot===0?'Sin resultados':`Mostrando ${s+1}–${e} de ${tot} equipos`;
-  const tb=document.getElementById('tb');
-  const em=document.getElementById('emp');
-  const sy=window.scrollY;
-  if(!pg.length){tb.innerHTML='';em.style.display='block';}
-  else{em.style.display='none';tb.innerHTML=pg.map((r,i)=>row(r,s+i+1)).join('');}
-  renderPg(tp);stats();
-  requestAnimationFrame(()=>window.scrollTo(0,sy));
-}
+    .im-head {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--brd);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
 
-function row(r,i){
-  const u   = r.u  || '';
-  const pw  = r.pw || '';
-  const pwId = `pw-${r.id}`;
-  return`<tr id="r${r.id}" data-id="${r.id}">
-<td class="ri">${String(i).padStart(2,'0')}</td>
+    .im-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--txt)
+    }
+
+    .im-close {
+      background: transparent;
+      border: none;
+      color: var(--txt2);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 4px;
+      line-height: 1;
+      transition: color .15s
+    }
+
+    .im-close:hover {
+      color: var(--txt)
+    }
+
+    .im-summary {
+      padding: 14px 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--brd)
+    }
+
+    .im-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px
+    }
+
+    .im-stat.total {
+      background: rgba(184, 255, 60, .08);
+      color: var(--neon);
+      border: 1px solid rgba(184, 255, 60, .2)
+    }
+
+    .im-stat.new {
+      background: rgba(57, 255, 133, .08);
+      color: #39ff85;
+      border: 1px solid rgba(57, 255, 133, .2)
+    }
+
+    .im-stat.dup {
+      background: rgba(255, 214, 61, .08);
+      color: var(--yel);
+      border: 1px solid rgba(255, 214, 61, .2)
+    }
+
+    .im-stat.err {
+      background: rgba(255, 59, 92, .08);
+      color: var(--red);
+      border: 1px solid rgba(255, 59, 92, .2)
+    }
+
+    .im-body {
+      overflow-y: auto;
+      flex: 1
+    }
+
+    .im-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    .im-table th {
+      padding: 9px 14px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--txt2);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--brd);
+      position: sticky;
+      top: 0;
+      background: var(--bg3)
+    }
+
+    .im-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      font-family: 'Space Mono', monospace;
+      font-size: 11px
+    }
+
+    .im-table tr.is-new td:first-child {
+      border-left: 3px solid #39ff85
+    }
+
+    .im-table tr.is-dup td:first-child {
+      border-left: 3px solid var(--yel)
+    }
+
+    .im-table tr.is-err td:first-child {
+      border-left: 3px solid var(--red)
+    }
+
+    .im-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      letter-spacing: .04em
+    }
+
+    .im-badge.n {
+      background: rgba(57, 255, 133, .15);
+      color: #39ff85
+    }
+
+    .im-badge.d {
+      background: rgba(255, 214, 61, .15);
+      color: var(--yel)
+    }
+
+    .im-badge.e {
+      background: rgba(255, 59, 92, .15);
+      color: var(--red)
+    }
+
+    .im-foot {
+      padding: 16px 24px;
+      border-top: 1px solid var(--brd);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .im-note {
+      font-size: 11px;
+      color: var(--txt2);
+      flex: 1
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--brd2);
+      border-radius: 3px
+    }
+
+    @media(max-width:900px) {
+
+      header,
+      main {
+        padding: 14px 16px
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+      <div class="hleft">
+        <div class="hlogo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="3" width="20" height="14" rx="2" stroke="#b8ff3c" stroke-width="1.6" />
+            <line x1="8" y1="21" x2="16" y2="21" stroke="#9b5cf6" stroke-width="1.6" stroke-linecap="round" />
+            <line x1="12" y1="17" x2="12" y2="21" stroke="#9b5cf6" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="htitle">
+          <h1>Cyber<span>IPs</span> Panel</h1>
+          <p>Gestión de infraestructura interna · Edición en tiempo real</p>
+        </div>
+      </div>
+      <div class="hright">
+        <div id="lastSaved"></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="stats">
+        <div class="sc">
+          <div class="si p">💻</div>
+          <div class="sl">Total Equipos</div>
+          <div class="sv p" id="sT">0</div>
+        </div>
+        <div class="sc">
+          <div class="si g"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="4" width="18" height="13" rx="2" stroke="#39ff85" stroke-width="1.8" />
+              <path d="M7 9l3 3-3 3" stroke="#39ff85" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <line x1="12" y1="15" x2="17" y2="15" stroke="#39ff85" stroke-width="1.8" stroke-linecap="round" />
+            </svg></div>
+          <div class="sl">Linux</div>
+          <div class="sv g" id="sL">0</div>
+        </div>
+        <div class="sc">
+          <div class="si c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="8" height="8" rx="1" fill="#5599ff" opacity=".9" />
+              <rect x="13" y="3" width="8" height="8" rx="1" fill="#5599ff" opacity=".7" />
+              <rect x="3" y="13" width="8" height="8" rx="1" fill="#5599ff" opacity=".7" />
+              <rect x="13" y="13" width="8" height="8" rx="1" fill="#5599ff" opacity=".9" />
+            </svg></div>
+          <div class="sl">Windows</div>
+          <div class="sv c" id="sW">0</div>
+        </div>
+        <div class="sc">
+          <div class="si k">⚠️</div>
+          <div class="sl">Sin Proceso</div>
+          <div class="sv k" id="sI">0</div>
+        </div>
+      </div>
+
+      <div class="tb">
+        <div class="sb">
+          <span class="si2">🔍</span>
+          <input id="q" type="text" placeholder="Buscar por nombre, IP o proceso…" oninput="render()" />
+        </div>
+        <select class="fs" id="fos" onchange="render()">
+          <option value="">Todos los SO</option>
+          <option value="LINUX">🐧 Linux</option>
+          <option value="WINDOWS">🪟 Windows</option>
+        </select>
+        <select class="fs" id="fpr" onchange="render()">
+          <option value="">TODOS LOS PROCESOS</option>
+        </select>
+        <button class="btn btn-a" onclick="toggleForm()">＋ Agregar Equipo</button>
+        <button class="btn btn-p" onclick="saveAll()">💾 Guardar Todo</button>
+        <button class="btn btn-g" onclick="openImport()"
+          style="background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25);color:var(--cyan)">⬆ Importar
+          CSV</button>
+        <button class="btn btn-g" onclick="downloadTemplate()" style="font-size:11px;padding:7px 12px"
+          title="Descargar plantilla CSV para Excel">📄 Plantilla</button>
+        <input type="file" id="csvFile" accept=".csv,.txt" style="display:none" onchange="handleFile(event)" />
+      </div>
+
+      <div class="tw">
+        <div class="thb">
+          <div class="tt">EQUIPOS REGISTRADOS <span class="tc" id="cnt">0</span></div>
+          <button class="btn btn-g" style="padding:5px 11px;font-size:11px" onclick="exportCSV()">⬇ CSV</button>
+        </div>
+        <div id="ebar" class="emb">✏️ <strong>Modo edición</strong> — Haz clic en cualquier celda para editar<span
+            id="chg">0 cambios</span></div>
+        <div id="addForm" class="af">
+          <div class="fg"><label class="fl">IP</label><input class="fi mono" id="nI" placeholder="192.168.x.x" /></div>
+          <div class="fg"><label class="fl">Proceso</label><input class="fi" id="nP" placeholder="ej: AJUSTES_SV" />
+          </div>
+          <div class="fg"><label class="fl">SO</label>
+            <select class="fsel" id="nO">
+              <option value="LINUX">LINUX</option>
+              <option value="WINDOWS">WINDOWS</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl">Usuario</label><input class="fi" id="nU" placeholder="ugenome" /></div>
+          <div class="fg"><label class="fl">Contraseña</label><input class="fi" id="nPW" placeholder="••••••" /></div>
+          <div class="fg" style="margin-top:auto"><button class="btn btn-p" onclick="addRow()"
+              style="height:36px">Agregar</button></div>
+          <div class="fg" style="margin-top:auto"><button class="btn btn-g" onclick="toggleForm()"
+              style="height:36px">Cancelar</button></div>
+        </div>
+        <div class="ts">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>DIRECCIÓN IP</th>
+                <th>PROCESO</th>
+                <th>SO</th>
+                <th>USUARIO</th>
+                <th>CONTRASEÑA</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody id="tb"></tbody>
+          </table>
+        </div>
+        <div id="emp" class="emp" style="display:none">
+          <div class="ei">🔍</div>
+          <p>Sin resultados</p>
+        </div>
+        <div class="pag">
+          <div id="pi">0 equipos</div>
+          <div class="pbs" id="pbs"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="im-overlay" id="imOverlay" onclick="closeImport(event)">
+    <div class="im-box" onclick="event.stopPropagation()">
+      <div class="im-head">
+        <div class="im-title">⬆ Importar IPs desde CSV</div>
+        <button class="im-close" onclick="closeImport()">✕</button>
+      </div>
+      <div class="im-summary" id="imSummary"></div>
+      <div class="im-body">
+        <table class="im-table">
+          <thead>
+            <tr>
+              <th>IP</th>
+              <th>PROCESO</th>
+              <th>SO</th>
+              <th>USUARIO</th>
+              <th>CONTRASEÑA</th>
+              <th>ESTADO</th>
+            </tr>
+          </thead>
+          <tbody id="imTbody"></tbody>
+        </table>
+      </div>
+      <div class="im-foot">
+        <span class="im-note" id="imNote">Solo se importarán las filas nuevas (verdes). Las amarillas ya existen.</span>
+        <button class="btn btn-g" onclick="closeImport()" style="padding:8px 16px">Cancelar</button>
+        <button class="btn btn-p" id="imConfirmBtn" onclick="confirmImport(false)" style="padding:8px 18px">✅ Importar
+          nuevas</button>
+        <button class="btn" id="imAllBtn" onclick="confirmImport(true)"
+          style="padding:8px 14px;background:rgba(255,214,61,.1);border:1px solid rgba(255,214,61,.25);color:var(--yel);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">+
+          incluir duplicadas</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span id="ti">✅</span><span id="tm">Guardado</span></div>
+
+  <script>
+    const KEY = 'cyberips_v2';
+    const PG = 20;
+    let data = [], pending = {}, page = 1, nid = 200, ae = null;
+
+    const DEF = [
+      { id: 1, m: '100 (Vix33)', ip: '192.168.49.77', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 2, m: '101 (Vix34)', ip: '192.168.49.78', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 3, m: '103 (Vix37)', ip: '192.168.49.81', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 4, m: '104 (Vix46)', ip: '192.168.51.91', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 5, m: '105 (Vix35)', ip: '192.168.49.79', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 6, m: '106 (vix38)', ip: '192.168.49.82', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 7, m: '107 (vix39)', ip: '192.168.49.83', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 8, m: '108 (vix40)', ip: '192.168.49.84', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 9, m: '109 (vix41)', ip: '192.168.49.85', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 10, m: '110 (vix42)', ip: '192.168.49.86', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 11, m: '111 (vix43)', ip: '192.168.49.87', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 12, m: '112 (vix44)', ip: '192.168.49.88', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 13, m: '113 (vix45)', ip: '192.168.49.89', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 14, m: '114 (vix36)', ip: '192.168.49.80', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 15, m: '115 (vix29)', ip: '192.168.49.32', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 16, m: '116 (vix30)', ip: '192.168.49.33', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 17, m: '117 (vix22)', ip: '192.168.49.34', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 18, m: '118 (vix23)', ip: '192.168.49.35', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 19, m: '117 (vix24)', ip: '192.168.49.36', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 20, m: '116 (vix25)', ip: '192.168.49.37', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 21, m: '115 (vix26)', ip: '192.168.49.57', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 22, m: '113 (vix27)', ip: '192.168.49.58', p: 'Retencion', o: 'LINUX' },
+      { id: 23, m: '112 (vix28)', ip: '192.168.49.40', p: 'Libre', o: 'WINDOWS' },
+      { id: 24, m: '111 (vix31)', ip: '192.168.49.43', p: 'Retencion', o: 'LINUX' },
+      { id: 25, m: '114 (vix21)', ip: '192.168.49.90', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 26, m: '101 (vix47)', ip: '192.168.49.91', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 27, m: '102 (vix48)', ip: '192.168.49.92', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 28, m: '103 (vix49)', ip: '192.168.49.93', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 29, m: '104 (prog24)', ip: '192.168.49.38', p: 'NINGUNO', o: 'NO' },
+      { id: 30, m: '107 (Mariana1)', ip: '192.168.51.11', p: 'MARIANA', o: 'WINDOWS' },
+      { id: 31, m: '108 (Mariana2)', ip: '192.168.51.12', p: 'MARIANA', o: 'WINDOWS' },
+      { id: 32, m: '109 (prog18)', ip: '192.168.49.71', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 33, m: '110 (prog19)', ip: '192.168.49.72', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 34, m: '111 (prog20)', ip: '192.168.49.73', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 35, m: '112 (prog21)', ip: '192.168.49.74', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 36, m: '113 (prog1)', ip: '192.168.51.176', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 37, m: '114 (prog22)', ip: '192.168.49.75', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 38, m: '115 (prog23)', ip: '192.168.49.76', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 39, m: '116 (prog25)', ip: '192.168.49.69', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 40, m: '117 (prog26)', ip: '192.168.49.68', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 41, m: '118 (prog3)', ip: '192.168.51.178', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 42, m: '119 (prog17)', ip: '192.168.49.67', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 43, m: '120 (vix32)', ip: '192.168.49.76', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 44, m: '121 (Equipo14)', ip: '192.168.51.111', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 45, m: '122 (Equipo13)', ip: '192.168.51.108', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 46, m: '123 (Equipo12)', ip: '192.168.51.104', p: 'FALLAS REPORTADAS', o: 'WINDOWS' },
+      { id: 47, m: '124 (Equipo11)', ip: '192.168.51.101', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 48, m: '125 (Equipo10)', ip: '192.168.51.96', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 49, m: '126 (Equipo9)', ip: '192.168.51.95', p: 'ORDENES_DUPLICADAS', o: 'WINDOWS' },
+      { id: 50, m: '127 (Equipo19)', ip: '192.168.49.94', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 51, m: '128 (Equipo18)', ip: '192.168.49.178', p: 'AJUSTES_SV', o: 'WINDOWS' },
+      { id: 52, m: '129 (Equipo8)', ip: '192.168.51.44', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 53, m: '130 (Equipo7)', ip: '192.168.51.30', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 54, m: '131 (Equipo6)', ip: '192.168.51.28', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 55, m: '132 (Equipo3)', ip: '192.168.51.16', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 56, m: '133 (Equipo4)', ip: '192.168.51.17', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 57, m: '134 (Equipo5)', ip: '192.168.51.20', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 58, m: '135 (Equipo2)', ip: '192.168.51.14', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 59, m: '136 (Equipo1)', ip: '192.168.51.13', p: 'AJUSTES_SV', o: 'LINUX' },
+      { id: 60, m: '192.168.61.4', ip: '192.168.61.4', p: 'variado', o: 'WINDOWS' },
+      { id: 61, m: '192.168.61.5', ip: '192.168.61.5', p: 'variado', o: 'WINDOWS' },
+      { id: 62, m: '192.168.61.18', ip: '192.168.61.18', p: 'variado', o: 'WINDOWS' },
+      { id: 63, m: '192.168.61.23', ip: '192.168.61.23', p: 'variado', o: 'WINDOWS' },
+      { id: 64, m: '192.168.61.28', ip: '192.168.61.28', p: 'variado', o: 'WINDOWS' },
+      { id: 65, m: '192.168.61.30', ip: '192.168.61.30', p: 'variado', o: 'WINDOWS' },
+      { id: 66, m: '192.168.61.31', ip: '192.168.61.31', p: 'variado', o: 'WINDOWS' },
+      { id: 67, m: '192.168.61.42', ip: '192.168.61.42', p: 'ok cliente', o: 'WINDOWS' },
+      { id: 68, m: '192.168.61.43', ip: '192.168.61.43', p: 'variado', o: 'WINDOWS' },
+      { id: 69, m: '192.168.61.45', ip: '192.168.61.45', p: 'variado', o: 'WINDOWS' },
+      { id: 70, m: '192.168.61.50', ip: '192.168.61.50', p: 'variado', o: 'WINDOWS' },
+      { id: 71, m: '192.168.61.51', ip: '192.168.61.51', p: 'variado', o: 'WINDOWS' },
+      { id: 72, m: 'prog29', ip: '192.168.49.67', p: 'ok cliente', o: 'LINUX' },
+      { id: 73, m: 'prog3', ip: '192.168.49.68', p: 'ok cliente', o: 'LINUX' },
+      { id: 74, m: 'prog25', ip: '192.168.49.69', p: 'ok cliente', o: 'LINUX' },
+      { id: 75, m: 'prog17', ip: '192.168.49.70', p: 'ok cliente', o: 'LINUX' },
+      { id: 76, m: 'prog18', ip: '192.168.49.71', p: 'ok cliente', o: 'LINUX' },
+      { id: 77, m: 'prog19', ip: '192.168.49.72', p: 'ok cliente', o: 'LINUX' },
+      { id: 78, m: 'prog20', ip: '192.168.49.73', p: 'ok cliente', o: 'LINUX' },
+      { id: 79, m: 'prog21', ip: '192.168.49.74', p: 'ok cliente', o: 'LINUX' },
+      { id: 80, m: 'prog22', ip: '192.168.49.75', p: 'ok cliente', o: 'LINUX' },
+      { id: 81, m: 'prog23', ip: '192.168.49.105', p: 'ok cliente', o: 'LINUX' },
+      { id: 82, m: 'prog1', ip: '192.168.51.176', p: 'ok cliente', o: 'LINUX' },
+      { id: 83, m: 'Prog2', ip: '192.168.51.177', p: 'ok cliente', o: 'LINUX' },
+      { id: 84, m: 'Prog3', ip: '192.168.51.178', p: 'ok cliente', o: 'LINUX' },
+      { id: 85, m: 'Prog4', ip: '192.168.51.189', p: 'ok cliente', o: 'LINUX' },
+      { id: 86, m: 'Prog5', ip: '192.168.51.190', p: 'ok cliente', o: 'LINUX' },
+      { id: 87, m: 'Prog6', ip: '192.168.51.191', p: 'ok cliente', o: 'LINUX' },
+      { id: 88, m: 'Prog7', ip: '192.168.51.192', p: 'ok cliente', o: 'LINUX' },
+      { id: 89, m: 'Prog8', ip: '192.168.51.193', p: 'ok cliente', o: 'LINUX' },
+      { id: 90, m: 'Prog9', ip: '192.168.51.194', p: 'ok cliente', o: 'LINUX' },
+      { id: 91, m: 'Prog10', ip: '192.168.51.195', p: 'ok cliente', o: 'LINUX' },
+      { id: 92, m: 'Prog11', ip: '192.168.51.201', p: 'ok cliente', o: 'LINUX' },
+      { id: 93, m: 'Prog12', ip: '192.168.51.202', p: 'ok cliente', o: 'LINUX' },
+      { id: 94, m: 'Prog13', ip: '192.168.51.203', p: 'ok cliente', o: 'LINUX' },
+      { id: 95, m: 'Prog14', ip: '192.168.51.204', p: 'ok cliente', o: 'LINUX' },
+      { id: 96, m: 'Prog27', ip: '192.168.51.220', p: 'variado', o: 'LINUX' },
+      { id: 97, m: 'Prog28', ip: '192.168.51.221', p: 'variado', o: 'LINUX' },
+    ];
+
+    const API = '/api/data';
+
+    async function init() {
+      try {
+        const res = await fetch(API);
+        if (res.ok) {
+          const json = await res.json();
+          if (Array.isArray(json) && json.length > 0) {
+            data = json;
+            nid = Math.max(...data.map(d => d.id)) + 1;
+          } else {
+            // servidor sin datos aún: subir los defaults
+            data = [...DEF];
+            await _pushData();
+          }
+        } else { throw new Error('bad response'); }
+      } catch (e) {
+        // fallback: localStorage
+        console.warn('Servidor no disponible, usando localStorage:', e.message);
+        try {
+          const s = localStorage.getItem(KEY);
+          if (s) { data = JSON.parse(s); nid = Math.max(...data.map(d => d.id)) + 1; }
+          else data = [...DEF];
+        } catch { data = [...DEF]; }
+      }
+      stats(); render(); buildProcFilter();
+    }
+
+    function stats() {
+      const l = data.filter(d => d.o === 'LINUX').length;
+      const w = data.filter(d => d.o === 'WINDOWS').length;
+      const i = data.filter(d => ['libre', 'ninguno'].includes((d.p || '').toLowerCase())).length;
+      document.getElementById('sT').textContent = data.length;
+      document.getElementById('sL').textContent = l;
+      document.getElementById('sW').textContent = w;
+      document.getElementById('sI').textContent = i;
+    }
+
+    function buildProcFilter() {
+      const sel = document.getElementById('fpr');
+      const cur = sel.value;
+      const procs = [...new Set(data.map(d => d.p).filter(Boolean))].sort();
+      sel.innerHTML = '<option value="">TODOS LOS PROCESOS</option>' +
+        procs.map(p => `<option value="${p}" ${p === cur ? 'selected' : ''}>${p.toUpperCase()}</option>`).join('');
+    }
+
+    function filtered() {
+      const q = document.getElementById('q').value.toLowerCase();
+      const os = document.getElementById('fos').value;
+      const pr = document.getElementById('fpr').value;
+      return data.filter(d => {
+        const mq = !q || d.m.toLowerCase().includes(q) || d.ip.includes(q) || d.p.toLowerCase().includes(q);
+        return mq && (!os || d.o === os) && (!pr || d.p === pr);
+      });
+    }
+
+    function pClass(p) {
+      if (!p) return 'p-de';
+      const u = p.toUpperCase();
+      if (u.includes('AJUSTES')) return 'p-aj';
+      if (u.includes('FALLAS')) return 'p-fa';
+      if (u.includes('ORDENES')) return 'p-or';
+      if (u.includes('RETENCI')) return 'p-re';
+      if (p === 'Libre' || p === 'NINGUNO' || p === 'NO') return 'p-li';
+      if (u.includes('MARIANA')) return 'p-ma';
+      if (p === 'variado') return 'p-va';
+      if (p === 'ok cliente') return 'p-ok';
+      return 'p-de';
+    }
+    function oClass(o) { return o === 'LINUX' ? 'o-l' : o === 'WINDOWS' ? 'o-w' : 'o-x' }
+    function oIcon(o) {
+      if (o === 'LINUX') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M7 9l3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="15" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+      if (o === 'WINDOWS') return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px"><rect x="2" y="2" width="9" height="9" rx="1" fill="currentColor" opacity=".9"/><rect x="13" y="2" width="9" height="9" rx="1" fill="currentColor" opacity=".7"/><rect x="2" y="13" width="9" height="9" rx="1" fill="currentColor" opacity=".7"/><rect x="13" y="13" width="9" height="9" rx="1" fill="currentColor" opacity=".9"/></svg>`;
+      return '❓';
+    }
+    function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') }
+
+    function render() {
+      const f = filtered();
+      const tot = f.length;
+      const tp = Math.max(1, Math.ceil(tot / PG));
+      if (page > tp) page = tp;
+      const s = (page - 1) * PG, e = Math.min(s + PG, tot);
+      const pg = f.slice(s, e);
+      document.getElementById('cnt').textContent = tot;
+      document.getElementById('pi').textContent = tot === 0 ? 'Sin resultados' : `Mostrando ${s + 1}–${e} de ${tot} equipos`;
+      const tb = document.getElementById('tb');
+      const em = document.getElementById('emp');
+      const sy = window.scrollY;
+      if (!pg.length) { tb.innerHTML = ''; em.style.display = 'block'; }
+      else { em.style.display = 'none'; tb.innerHTML = pg.map((r, i) => row(r, s + i + 1)).join(''); }
+      renderPg(tp); stats();
+      requestAnimationFrame(() => window.scrollTo(0, sy));
+    }
+
+    function row(r, i) {
+      const u = r.u || '';
+      const pw = r.pw || '';
+      const pwId = `pw-${r.id}`;
+      return `<tr id="r${r.id}" data-id="${r.id}">
+<td class="ri">${String(i).padStart(2, '0')}</td>
 <td><div><span class="ip-b">${esc(r.ip)}</span></div></td>
 <td><div><span class="pb ${pClass(r.p)}">${esc(r.p)}</span></div></td>
 <td><div><span class="ob ${oClass(r.o)}">${oIcon(r.o)} ${esc(r.o)}</span></div></td>
@@ -516,306 +1573,303 @@ function row(r,i){
   <button class="ib eb" title="Editar fila" onclick="editRow(${r.id},event)">✏️</button>
   <button class="ib db" title="Eliminar" onclick="del(${r.id},event)">🗑</button>
 </div></td>
-</tr>`;}
+</tr>`;
+    }
 
-function togglePw(spanId, realPw){
-  const span = document.getElementById(spanId);
-  if(!span) return;
-  span.textContent = span.textContent === '••••••••' ? realPw : '••••••••';
-}
+    function togglePw(spanId, realPw) {
+      const span = document.getElementById(spanId);
+      if (!span) return;
+      span.textContent = span.textContent === '••••••••' ? realPw : '••••••••';
+    }
 
-function editRow(id,e){
-  if(e)e.stopPropagation();
-  if(ae)commit(ae.c,ae.f,ae.id,false);
-  const r=data.find(d=>d.id===id);if(!r)return;
-  const tr=document.getElementById('r'+id);if(!tr)return;
-  tr.classList.add('row-editing');
-  document.getElementById('ebar').classList.add('on');
-  tr.innerHTML=`
+    function editRow(id, e) {
+      if (e) e.stopPropagation();
+      if (ae) commit(ae.c, ae.f, ae.id, false);
+      const r = data.find(d => d.id === id); if (!r) return;
+      const tr = document.getElementById('r' + id); if (!tr) return;
+      tr.classList.add('row-editing');
+      document.getElementById('ebar').classList.add('on');
+      tr.innerHTML = `
 <td class="ri">${tr.querySelector('.ri').textContent}</td>
 <td><input class="re-input mono" id="re-ip-${id}" value="${esc(r.ip)}" placeholder="192.168.x.x"/></td>
 <td><input class="re-input" id="re-p-${id}" value="${esc(r.p)}" placeholder="Proceso"/></td>
 <td><select class="re-sel" id="re-o-${id}">
-  <option value="LINUX" ${r.o==='LINUX'?'selected':''}>[>_] LINUX</option>
-  <option value="WINDOWS" ${r.o==='WINDOWS'?'selected':''}>[#] WINDOWS</option>
-  <option value="NO" ${r.o==='NO'?'selected':''}>[?] NO</option>
+  <option value="LINUX" ${r.o === 'LINUX' ? 'selected' : ''}>[>_] LINUX</option>
+  <option value="WINDOWS" ${r.o === 'WINDOWS' ? 'selected' : ''}>[#] WINDOWS</option>
+  <option value="NO" ${r.o === 'NO' ? 'selected' : ''}>[?] NO</option>
 </select></td>
-<td><input class="re-input" id="re-u-${id}" value="${esc(r.u||'')}" placeholder="usuario"/></td>
-<td><input class="re-input" id="re-pw-${id}" value="${esc(r.pw||'')}" placeholder="contraseña"/></td>
+<td><input class="re-input" id="re-u-${id}" value="${esc(r.u || '')}" placeholder="usuario"/></td>
+<td><input class="re-input" id="re-pw-${id}" value="${esc(r.pw || '')}" placeholder="contraseña"/></td>
 <td><div class="ra always">
   <button class="ib sb" title="Guardar" onclick="saveRow(${id},event)">✅</button>
   <button class="ib cb" title="Cancelar" onclick="cancelRow(${id},event)">❌</button>
 </div></td>`;
-  document.getElementById('re-m-'+id).focus();
-  tr.querySelectorAll('input').forEach(inp=>inp.addEventListener('keydown',ev=>{
-    if(ev.key==='Enter'){ev.preventDefault();saveRow(id,null);}
-    if(ev.key==='Escape'){ev.preventDefault();cancelRow(id,null);}
-  }));
-}
+      document.getElementById('re-m-' + id).focus();
+      tr.querySelectorAll('input').forEach(inp => inp.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') { ev.preventDefault(); saveRow(id, null); }
+        if (ev.key === 'Escape') { ev.preventDefault(); cancelRow(id, null); }
+      }));
+    }
 
-function saveRow(id,e){
-  if(e)e.stopPropagation();
-  const r=data.find(d=>d.id===id);if(!r)return;
-  const ni =document.getElementById('re-ip-'+id)?.value.trim();
-  const np =document.getElementById('re-p-'+id)?.value.trim();
-  const no =document.getElementById('re-o-'+id)?.value;
-  const nu =document.getElementById('re-u-'+id)?.value.trim();
-  const npw=document.getElementById('re-pw-'+id)?.value.trim();
-  if(!ni||!np){toast('⚠️','Completa los campos obligatorios');return;}
-  const changed=ni!==r.ip||np!==r.p||no!==r.o||nu!==r.u||npw!==r.pw;
-  r.ip=ni;r.p=np;r.o=no;r.u=nu??r.u;r.pw=npw??r.pw;
-  if(changed){if(!pending[id])pending[id]={};pending[id]={ip:r.ip,p:r.p,o:r.o,u:r.u,pw:r.pw};updChg();}
-  toast('✅','Fila actualizada — recuerda Guardar Todo');
-  buildProcFilter(); render();
-}
+    function saveRow(id, e) {
+      if (e) e.stopPropagation();
+      const r = data.find(d => d.id === id); if (!r) return;
+      const ni = document.getElementById('re-ip-' + id)?.value.trim();
+      const np = document.getElementById('re-p-' + id)?.value.trim();
+      const no = document.getElementById('re-o-' + id)?.value;
+      const nu = document.getElementById('re-u-' + id)?.value.trim();
+      const npw = document.getElementById('re-pw-' + id)?.value.trim();
+      if (!ni || !np) { toast('⚠️', 'Completa los campos obligatorios'); return; }
+      const changed = ni !== r.ip || np !== r.p || no !== r.o || nu !== r.u || npw !== r.pw;
+      r.ip = ni; r.p = np; r.o = no; r.u = nu ?? r.u; r.pw = npw ?? r.pw;
+      if (changed) { if (!pending[id]) pending[id] = {}; pending[id] = { ip: r.ip, p: r.p, o: r.o, u: r.u, pw: r.pw }; updChg(); }
+      toast('✅', 'Fila actualizada — recuerda Guardar Todo');
+      buildProcFilter(); render();
+    }
 
-function cancelRow(id,e){
-  if(e)e.stopPropagation();
-  render();
-}
+    function cancelRow(id, e) {
+      if (e) e.stopPropagation();
+      render();
+    }
 
-function edit(cell,f,id){
-  if(ae)commit(ae.c,ae.f,ae.id,false);
-  const r=data.find(d=>d.id===id);if(!r)return;
-  ae={c:cell,f,id};
-  document.getElementById('r'+id)?.classList.add('editing');
-  document.getElementById('ebar').classList.add('on');
-  const d=cell.querySelector('div');
-  if(f==='o'){
-    d.innerHTML=`<select class="cs" onchange="commit(this.parentElement.parentElement,'${f}',${id},true)" onblur="commit(this.parentElement.parentElement,'${f}',${id},true)">
-<option value="LINUX" ${r.o==='LINUX'?'selected':''}>🐧 LINUX</option>
-<option value="WINDOWS" ${r.o==='WINDOWS'?'selected':''}>🪟 WINDOWS</option>
-<option value="NO" ${r.o==='NO'?'selected':''}>❓ NO</option></select>`;
-  }else{
-    const cls=f==='ip'?'mono':'';
-    d.innerHTML=`<input class="ci ${cls}" value="${esc(r[f])}" onblur="commit(this.parentElement.parentElement,'${f}',${id},true)" onkeydown="ek(event,this.parentElement.parentElement,'${f}',${id})"/>`;
-    d.querySelector('input').focus();d.querySelector('input').select();
-  }
-}
-function ek(e,c,f,id){if(e.key==='Enter'){e.preventDefault();commit(c,f,id,true);}if(e.key==='Escape')commit(c,f,id,false);}
-function commit(cell,f,id,save){
-  ae=null;
-  const r=data.find(d=>d.id===id);if(!r)return;
-  const inp=cell.querySelector('input,select');
-  let v=inp?inp.value.trim():null;
-  if(save&&v!==null&&v!==r[f]){if(!pending[id])pending[id]={};pending[id][f]=v;r[f]=v;updChg();}
-  document.getElementById('r'+id)?.classList.remove('editing');
-  buildProcFilter(); render();
-}
-function updChg(){
-  const c=Object.keys(pending).length;
-  document.getElementById('chg').textContent=`${c} cambio${c!==1?'s':''}`;
-  if(!c)document.getElementById('ebar').classList.remove('on');
-}
-function del(id,e){
-  e.stopPropagation();
-  const r=data.find(d=>d.id===id);if(!r)return;
-  if(!confirm(`¿Eliminar "${r.m}" (${r.ip})?`))return;
-  data=data.filter(d=>d.id!==id);delete pending[id];updChg();toast('🗑️',`"${r.ip}" eliminado`);buildProcFilter();render();
-}
-function toggleForm(){document.getElementById('addForm').classList.toggle('on');}
-function addRow(){
-  const ip=document.getElementById('nI').value.trim();
-  const p =document.getElementById('nP').value.trim();
-  const o =document.getElementById('nO').value;
-  const u =document.getElementById('nU').value.trim();
-  const pw=document.getElementById('nPW').value.trim();
-  if(!ip||!p){toast('⚠️','Completa todos los campos');return;}
-  const r={id:nid++,m:ip,ip,p,o,u,pw};
-  data.push(r);pending[r.id]={...r};updChg();
-  document.getElementById('nI').value='';
-  document.getElementById('nP').value='';document.getElementById('nU').value='';
-  document.getElementById('nPW').value='';
-  document.getElementById('addForm').classList.remove('on');
-  page=Math.ceil(data.length/PG);buildProcFilter();render();toast('✅',`"${ip}" agregado`);
-}
-async function saveAll(){
-  const c = Object.keys(pending).length;
-  const ok = await _pushData();
-  if(ok){
-    pending={}; updChg();
-    const now = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('lastSaved').textContent = `Guardado a las ${now}`;
-    toast('💾', c>0 ? `${c} cambio${c!==1?'s':''} guardados` : 'Datos sincronizados');
-  } else {
-    // fallback localStorage
-    localStorage.setItem(KEY, JSON.stringify(data));
-    pending={}; updChg();
-    toast('⚠️','Guardado local (servidor no disponible)');
-  }
-  render();
-}
-async function _pushData(){
-  try{
-    const res = await fetch(API, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(data)
-    });
-    return res.ok;
-  } catch{ return false; }
-}
-function exportCSV(){
-  const h=['IP','PROCESO','SO','USUARIO','PASSWORD'];
-  const rows=data.map(d=>[d.ip,d.p,d.o,d.u||'',d.pw||'']);
-  const csv='\uFEFF'+[h,...rows].map(r=>r.join(';')).join('\r\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download='CyberIps.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-  toast('📄','CSV exportado');
-}
-function renderPg(tp){
-  const c=document.getElementById('pbs');
-  if(tp<=1){c.innerHTML='';return;}
-  let h=`<button class="pb2" ${page===1?'disabled':''} onclick="go(${page-1})">‹</button>`;
-  const rng=[];
-  for(let i=1;i<=tp;i++){
-    if(i===1||i===tp||Math.abs(i-page)<=1)rng.push(i);
-    else if(rng[rng.length-1]!=='…')rng.push('…');
-  }
-  for(const x of rng)h+=x==='…'?`<button class="pb2" disabled>…</button>`:`<button class="pb2 ${x===page?'act':''}" onclick="go(${x})">${x}</button>`;
-  h+=`<button class="pb2" ${page===tp?'disabled':''} onclick="go(${page+1})">›</button>`;
-  c.innerHTML=h;
-}
-function go(p){page=p;render();document.querySelector('.tw').scrollIntoView({behavior:'smooth',block:'start'});}
-let tt=null;
-function toast(icon,msg){
-  clearTimeout(tt);
-  const t=document.getElementById('toast');
-  document.getElementById('ti').textContent=icon;
-  document.getElementById('tm').textContent=msg;
-  t.classList.add('on');tt=setTimeout(()=>t.classList.remove('on'),3000);
-}
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveAll();}});
-init();
-/* ===== CSV IMPORT ===== */
-let imRows = [];
+    function edit(cell, f, id) {
+      if (ae) commit(ae.c, ae.f, ae.id, false);
+      const r = data.find(d => d.id === id); if (!r) return;
+      ae = { c: cell, f, id };
+      document.getElementById('r' + id)?.classList.add('editing');
+      document.getElementById('ebar').classList.add('on');
+      const d = cell.querySelector('div');
+      if (f === 'o') {
+        d.innerHTML = `<select class="cs" onchange="commit(this.parentElement.parentElement,'${f}',${id},true)" onblur="commit(this.parentElement.parentElement,'${f}',${id},true)">
+<option value="LINUX" ${r.o === 'LINUX' ? 'selected' : ''}>🐧 LINUX</option>
+<option value="WINDOWS" ${r.o === 'WINDOWS' ? 'selected' : ''}>🪟 WINDOWS</option>
+<option value="NO" ${r.o === 'NO' ? 'selected' : ''}>❓ NO</option></select>`;
+      } else {
+        const cls = f === 'ip' ? 'mono' : '';
+        d.innerHTML = `<input class="ci ${cls}" value="${esc(r[f])}" onblur="commit(this.parentElement.parentElement,'${f}',${id},true)" onkeydown="ek(event,this.parentElement.parentElement,'${f}',${id})"/>`;
+        d.querySelector('input').focus(); d.querySelector('input').select();
+      }
+    }
+    function ek(e, c, f, id) { if (e.key === 'Enter') { e.preventDefault(); commit(c, f, id, true); } if (e.key === 'Escape') commit(c, f, id, false); }
+    function commit(cell, f, id, save) {
+      ae = null;
+      const r = data.find(d => d.id === id); if (!r) return;
+      const inp = cell.querySelector('input,select');
+      let v = inp ? inp.value.trim() : null;
+      if (save && v !== null && v !== r[f]) { if (!pending[id]) pending[id] = {}; pending[id][f] = v; r[f] = v; updChg(); }
+      document.getElementById('r' + id)?.classList.remove('editing');
+      buildProcFilter(); render();
+    }
+    function updChg() {
+      const c = Object.keys(pending).length;
+      document.getElementById('chg').textContent = `${c} cambio${c !== 1 ? 's' : ''}`;
+      if (!c) document.getElementById('ebar').classList.remove('on');
+    }
+    function del(id, e) {
+      e.stopPropagation();
+      const r = data.find(d => d.id === id); if (!r) return;
+      if (!confirm(`¿Eliminar "${r.m}" (${r.ip})?`)) return;
+      data = data.filter(d => d.id !== id); delete pending[id]; updChg(); toast('🗑️', `"${r.ip}" eliminado`); buildProcFilter(); render();
+    }
+    function toggleForm() { document.getElementById('addForm').classList.toggle('on'); }
+    function addRow() {
+      const ip = document.getElementById('nI').value.trim();
+      const p = document.getElementById('nP').value.trim();
+      const o = document.getElementById('nO').value;
+      const u = document.getElementById('nU').value.trim();
+      const pw = document.getElementById('nPW').value.trim();
+      if (!ip || !p) { toast('⚠️', 'Completa todos los campos'); return; }
+      const r = { id: nid++, m: ip, ip, p, o, u, pw };
+      data.push(r); pending[r.id] = { ...r }; updChg();
+      document.getElementById('nI').value = '';
+      document.getElementById('nP').value = ''; document.getElementById('nU').value = '';
+      document.getElementById('nPW').value = '';
+      document.getElementById('addForm').classList.remove('on');
+      page = Math.ceil(data.length / PG); buildProcFilter(); render(); toast('✅', `"${ip}" agregado`);
+    }
+    async function saveAll() {
+      const c = Object.keys(pending).length;
+      const ok = await _pushData();
+      if (ok) {
+        pending = {}; updChg();
+        const now = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('lastSaved').textContent = `Guardado a las ${now}`;
+        toast('💾', c > 0 ? `${c} cambio${c !== 1 ? 's' : ''} guardados` : 'Datos sincronizados');
+      } else {
+        // fallback localStorage
+        localStorage.setItem(KEY, JSON.stringify(data));
+        pending = {}; updChg();
+        toast('⚠️', 'Guardado local (servidor no disponible)');
+      }
+      render();
+    }
+    async function _pushData() {
+      try {
+        const res = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        return res.ok;
+      } catch { return false; }
+    }
+    function exportCSV() {
+      const h = ['IP', 'PROCESO', 'SO', 'USUARIO', 'PASSWORD'];
+      const rows = data.map(d => [d.ip, d.p, d.o, d.u || '', d.pw || '']);
+      const csv = '\uFEFF' + [h, ...rows].map(r => r.join(';')).join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'CyberIps.csv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast('📄', 'CSV exportado');
+    }
+    function renderPg(tp) {
+      const c = document.getElementById('pbs');
+      if (tp <= 1) { c.innerHTML = ''; return; }
+      let h = `<button class="pb2" ${page === 1 ? 'disabled' : ''} onclick="go(${page - 1})">‹</button>`;
+      const rng = [];
+      for (let i = 1; i <= tp; i++) {
+        if (i === 1 || i === tp || Math.abs(i - page) <= 1) rng.push(i);
+        else if (rng[rng.length - 1] !== '…') rng.push('…');
+      }
+      for (const x of rng) h += x === '…' ? `<button class="pb2" disabled>…</button>` : `<button class="pb2 ${x === page ? 'act' : ''}" onclick="go(${x})">${x}</button>`;
+      h += `<button class="pb2" ${page === tp ? 'disabled' : ''} onclick="go(${page + 1})">›</button>`;
+      c.innerHTML = h;
+    }
+    function go(p) { page = p; render(); document.querySelector('.tw').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    let tt = null;
+    function toast(icon, msg) {
+      clearTimeout(tt);
+      const t = document.getElementById('toast');
+      document.getElementById('ti').textContent = icon;
+      document.getElementById('tm').textContent = msg;
+      t.classList.add('on'); tt = setTimeout(() => t.classList.remove('on'), 3000);
+    }
+    document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveAll(); } });
+    init();
+    /* ===== CSV IMPORT ===== */
+    let imRows = [];
 
-function openImport(){
-  document.getElementById('csvFile').click();
-}
-function closeImport(e){
-  if(e && e.target !== document.getElementById('imOverlay')) return;
-  document.getElementById('imOverlay').classList.remove('on');
-  document.getElementById('csvFile').value='';
-  imRows=[];
-}
-function handleFile(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try{ parseCSV(ev.target.result); }
-    catch(err){ toast('❌','Error al leer el archivo: '+err.message); }
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-function parseCSV(text){
-  if(!text) return;
-  text = text.replace(/^\uFEFF/, '').replace(/^\uEF\xBB\xBF/, '').trim();
-  const lines = text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
-  if(!lines.length){ toast('⚠️','El archivo está vacío'); return; }
+    function openImport() {
+      document.getElementById('csvFile').click();
+    }
+    function closeImport(e) {
+      if (e && e.target !== document.getElementById('imOverlay')) return;
+      document.getElementById('imOverlay').classList.remove('on');
+      document.getElementById('csvFile').value = '';
+      imRows = [];
+    }
+    function handleFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try { parseCSV(ev.target.result); }
+        catch (err) { toast('❌', 'Error al leer el archivo: ' + err.message); }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+    function parseCSV(text) {
+      if (!text) return;
+      text = text.replace(/^\uFEFF/, '').replace(/^\uEF\xBB\xBF/, '').trim();
+      const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim());
+      if (!lines.length) { toast('⚠️', 'El archivo está vacío'); return; }
 
-  // Detect separator: comma, semicolon, tab
-  let sep = ',';
-  if(lines[0].includes(';')) sep = ';';
-  else if(lines[0].includes('\t')) sep = '\t';
+      // Detect separator: comma, semicolon, tab
+      let sep = ',';
+      if (lines[0].includes(';')) sep = ';';
+      else if (lines[0].includes('\t')) sep = '\t';
 
-  // Check if first line is header
-  const firstLower = lines[0].toLowerCase();
-  const hasHeader = firstLower.includes('ip') || firstLower.includes('proceso');
-  const dataLines = hasHeader ? lines.slice(1) : lines;
+      // Check if first line is header
+      const firstLower = lines[0].toLowerCase();
+      const hasHeader = firstLower.includes('ip') || firstLower.includes('proceso');
+      const dataLines = hasHeader ? lines.slice(1) : lines;
 
-  const existingIPs = new Set(data.map(d=>d.ip.trim()));
-  imRows = [];
+      const existingIPs = new Set(data.map(d => d.ip.trim()));
+      imRows = [];
 
-  dataLines.forEach((line, idx) => {
-    if(!line.trim()) return;
-    const cols = line.split(sep).map(c=>c.trim().replace(/^["'\s]+|["'\s]+$/g,''));
-    let ip  = (cols[0]||'').replace(/[^\d.]/g, '');
-    let p   = cols[1]||'';
-    let o   = (cols[2]||'').toUpperCase().includes('WIN') ? 'WINDOWS' : 'LINUX';
-    let u   = cols[3]||'ugenome';
-    let pw  = cols[4]||'UbuntuCyb2026$';
+      dataLines.forEach((line, idx) => {
+        if (!line.trim()) return;
+        const cols = line.split(sep).map(c => c.trim().replace(/^["'\s]+|["'\s]+$/g, ''));
+        let ip = (cols[0] || '').replace(/[^\d.]/g, '');
+        let p = cols[1] || '';
+        let o = (cols[2] || '').toUpperCase().includes('WIN') ? 'WINDOWS' : 'LINUX';
+        let u = cols[3] || 'ugenome';
+        let pw = cols[4] || 'UbuntuCyb2026$';
 
-    let status = 'new';
-    if(!ip || !ip.match(/^\d{1,3}(\.\d{1,3}){3}$/)) status='err';
-    else if(existingIPs.has(ip)) status='dup';
+        let status = 'new';
+        if (!ip || !ip.match(/^\d{1,3}(\.\d{1,3}){3}$/)) status = 'err';
+        else if (existingIPs.has(ip)) status = 'dup';
 
-    imRows.push({ip, p, o, u, pw, status, line:idx+1+(hasHeader?1:0)});
-  });
+        imRows.push({ ip, p, o, u, pw, status, line: idx + 1 + (hasHeader ? 1 : 0) });
+      });
 
-  showImportModal();
-}
-function showImportModal(){
-  const total = imRows.length;
-  const news  = imRows.filter(r=>r.status==='new').length;
-  const dups  = imRows.filter(r=>r.status==='dup').length;
-  const errs  = imRows.filter(r=>r.status==='err').length;
+      showImportModal();
+    }
+    function showImportModal() {
+      const total = imRows.length;
+      const news = imRows.filter(r => r.status === 'new').length;
+      const dups = imRows.filter(r => r.status === 'dup').length;
+      const errs = imRows.filter(r => r.status === 'err').length;
 
-  document.getElementById('imSummary').innerHTML=`
+      document.getElementById('imSummary').innerHTML = `
     <span class="im-stat total">📋 ${total} filas</span>
     <span class="im-stat new">✅ ${news} nuevas</span>
-    ${dups?`<span class="im-stat dup">⚠️ ${dups} duplicadas</span>`:''}
-    ${errs?`<span class="im-stat err">❌ ${errs} inválidas</span>`:''}
+    ${dups ? `<span class="im-stat dup">⚠️ ${dups} duplicadas</span>` : ''}
+    ${errs ? `<span class="im-stat err">❌ ${errs} inválidas</span>` : ''}
   `;
 
-  document.getElementById('imTbody').innerHTML = imRows.map(r=>`
+      document.getElementById('imTbody').innerHTML = imRows.map(r => `
     <tr class="is-${r.status}">
       <td>${esc(r.ip)}</td>
       <td>${esc(r.p)}</td>
       <td>${r.o}</td>
       <td>${esc(r.u)}</td>
       <td>••••••</td>
-      <td><span class="im-badge ${r.status==='new'?'n':r.status==='dup'?'d':'e'}">
-        ${r.status==='new'?'NUEVA':r.status==='dup'?'DUPLICADA':'INVÁLIDA'}
+      <td><span class="im-badge ${r.status === 'new' ? 'n' : r.status === 'dup' ? 'd' : 'e'}">
+        ${r.status === 'new' ? 'NUEVA' : r.status === 'dup' ? 'DUPLICADA' : 'INVÁLIDA'}
       </span></td>
     </tr>`).join('');
 
-  document.getElementById('imNote').textContent =
-    news>0 ? `Se importarán ${news} IP${news!==1?'s':''} nuevas. Las amarillas ya existen en el panel.`
-           : 'No hay IPs nuevas para importar.';
+      document.getElementById('imNote').textContent =
+        news > 0 ? `Se importarán ${news} IP${news !== 1 ? 's' : ''} nuevas. Las amarillas ya existen en el panel.`
+          : 'No hay IPs nuevas para importar.';
 
-  document.getElementById('imConfirmBtn').disabled = news===0;
-  document.getElementById('imAllBtn').style.display = dups>0 ? '' : 'none';
-  document.getElementById('imOverlay').classList.add('on');
-}
-function confirmImport(includeDups){
-  const toAdd = imRows.filter(r=> r.status==='new' || (includeDups && r.status==='dup'));
-  if(!toAdd.length){ toast('⚠️','Nada que importar'); return; }
-  toAdd.forEach(r=>{
-    const rec = {id:nid++, m:r.ip, ip:r.ip, p:r.p, o:r.o, u:r.u, pw:r.pw};
-    data.push(rec);
-    pending[rec.id]={...rec};
-  });
-  updChg(); buildProcFilter(); render();
-  closeImport();
-  toast('✅', `${toAdd.length} equipo${toAdd.length!==1?'s':''} importado${toAdd.length!==1?'s':''}. Recuerda Guardar Todo.`);
-}
-function downloadTemplate(){
-  const csvContent = '\uFEFF' + [
-    'IP;PROCESO;SO;USUARIO;PASSWORD',
-    '192.168.49.100;AJUSTES_SV;LINUX;ugenome;UbuntuCyb2026$',
-    '192.168.49.101;RPACNOS;LINUX;ugenome;UbuntuCyb2026$',
-    '192.168.51.200;VARIADO;WINDOWS;Sistemas;Cyber123'
-  ].join('\r\n');
+      document.getElementById('imConfirmBtn').disabled = news === 0;
+      document.getElementById('imAllBtn').style.display = dups > 0 ? '' : 'none';
+      document.getElementById('imOverlay').classList.add('on');
+    }
+    function confirmImport(includeDups) {
+      const toAdd = imRows.filter(r => r.status === 'new' || (includeDups && r.status === 'dup'));
+      if (!toAdd.length) { toast('⚠️', 'Nada que importar'); return; }
+      toAdd.forEach(r => {
+        const rec = { id: nid++, m: r.ip, ip: r.ip, p: r.p, o: r.o, u: r.u, pw: r.pw };
+        data.push(rec);
+        pending[rec.id] = { ...rec };
+      });
+      updChg(); buildProcFilter(); render();
+      closeImport();
+      toast('✅', `${toAdd.length} equipo${toAdd.length !== 1 ? 's' : ''} importado${toAdd.length !== 1 ? 's' : ''}. Recuerda Guardar Todo.`);
+    }
+    function downloadTemplate() {
+      const csvContent = '\uFEFFIP;PROCESO;SO;USUARIO;PASSWORD\r\n';
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'plantilla_cyberips.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  toast('📄','Plantilla descargada');
-}
-/* ===== END CSV IMPORT ===== */
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'plantilla_cyberips.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast('📄', 'Plantilla descargada');
+    }
+    /* ===== END CSV IMPORT ===== */
 
-</script>
+  </script>
 </body>
+
 </html>
