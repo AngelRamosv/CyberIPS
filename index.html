@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CyberIPs — Panel de Infraestructura</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#060608;--bg2:#0d0d12;--bg3:#13131a;
@@ -156,7 +157,36 @@ tbody tr.row-editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,
 .toast.on{transform:translateY(0);opacity:1;pointer-events:auto}
 
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+/* IMPORT MODAL */
+.im-overlay{position:fixed;inset:0;background:rgba(0,0,0,.0);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;transition:background .2s}
+.im-overlay.on{display:flex;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
+.im-box{background:var(--bg3);border:1px solid var(--brd2);border-radius:var(--rl);width:100%;max-width:820px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:fadeUp .25s ease}
+.im-head{padding:20px 24px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.im-title{font-size:15px;font-weight:700;color:var(--txt)}
+.im-close{background:transparent;border:none;color:var(--txt2);font-size:20px;cursor:pointer;padding:0 4px;line-height:1;transition:color .15s}
+.im-close:hover{color:var(--txt)}
+.im-summary{padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--brd)}
+.im-stat{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px}
+.im-stat.total{background:rgba(184,255,60,.08);color:var(--neon);border:1px solid rgba(184,255,60,.2)}
+.im-stat.new{background:rgba(57,255,133,.08);color:#39ff85;border:1px solid rgba(57,255,133,.2)}
+.im-stat.dup{background:rgba(255,214,61,.08);color:var(--yel);border:1px solid rgba(255,214,61,.2)}
+.im-stat.err{background:rgba(255,59,92,.08);color:var(--red);border:1px solid rgba(255,59,92,.2)}
+.im-body{overflow-y:auto;flex:1}
+.im-table{width:100%;border-collapse:collapse;font-size:12px}
+.im-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--txt2);text-transform:uppercase;border-bottom:1px solid var(--brd);position:sticky;top:0;background:var(--bg3)}
+.im-table td{padding:8px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-family:'Space Mono',monospace;font-size:11px}
+.im-table tr.is-new td:first-child{border-left:3px solid #39ff85}
+.im-table tr.is-dup td:first-child{border-left:3px solid var(--yel)}
+.im-table tr.is-err td:first-child{border-left:3px solid var(--red)}
+.im-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.04em}
+.im-badge.n{background:rgba(57,255,133,.15);color:#39ff85}
+.im-badge.d{background:rgba(255,214,61,.15);color:var(--yel)}
+.im-badge.e{background:rgba(255,59,92,.15);color:var(--red)}
+.im-foot{padding:16px 24px;border-top:1px solid var(--brd);display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.im-note{font-size:11px;color:var(--txt2);flex:1}
+
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg2)}
 ::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:3px}
@@ -208,6 +238,9 @@ tbody tr.row-editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,
     </select>
     <button class="btn btn-a" onclick="toggleForm()">＋ Agregar Equipo</button>
     <button class="btn btn-p" onclick="saveAll()">💾 Guardar Todo</button>
+    <button class="btn btn-g" onclick="openImport()" style="background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.25);color:var(--cyan)">⬆ Importar Excel / CSV</button>
+    <button class="btn btn-g" onclick="downloadTemplate()" style="font-size:11px;padding:7px 12px" title="Descargar plantilla Excel">📄 Plantilla Excel</button>
+    <input type="file" id="csvFile" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFile(event)"/>
   </div>
 
   <div class="tw">
@@ -240,6 +273,31 @@ tbody tr.row-editing{background:rgba(184,255,60,.04);outline:1px solid rgba(184,
     </div>
   </div>
 </main>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="im-overlay" id="imOverlay" onclick="closeImport(event)">
+  <div class="im-box" onclick="event.stopPropagation()">
+    <div class="im-head">
+      <div class="im-title">⬆ Importar IPs desde CSV</div>
+      <button class="im-close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="im-summary" id="imSummary"></div>
+    <div class="im-body">
+      <table class="im-table">
+        <thead><tr>
+          <th>IP</th><th>PROCESO</th><th>SO</th><th>USUARIO</th><th>CONTRASEÑA</th><th>ESTADO</th>
+        </tr></thead>
+        <tbody id="imTbody"></tbody>
+      </table>
+    </div>
+    <div class="im-foot">
+      <span class="im-note" id="imNote">Solo se importarán las filas nuevas (verdes). Las amarillas ya existen.</span>
+      <button class="btn btn-g" onclick="closeImport()" style="padding:8px 16px">Cancelar</button>
+      <button class="btn btn-p" id="imConfirmBtn" onclick="confirmImport(false)" style="padding:8px 18px">✅ Importar nuevas</button>
+      <button class="btn" id="imAllBtn" onclick="confirmImport(true)" style="padding:8px 14px;background:rgba(255,214,61,.1);border:1px solid rgba(255,214,61,.25);color:var(--yel);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">+ incluir duplicadas</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"><span id="ti">✅</span><span id="tm">Guardado</span></div>
@@ -437,9 +495,11 @@ function render(){
   document.getElementById('pi').textContent=tot===0?'Sin resultados':`Mostrando ${s+1}–${e} de ${tot} equipos`;
   const tb=document.getElementById('tb');
   const em=document.getElementById('emp');
+  const sy=window.scrollY;
   if(!pg.length){tb.innerHTML='';em.style.display='block';}
   else{em.style.display='none';tb.innerHTML=pg.map((r,i)=>row(r,s+i+1)).join('');}
   renderPg(tp);stats();
+  requestAnimationFrame(()=>window.scrollTo(0,sy));
 }
 
 function row(r,i){
@@ -507,7 +567,7 @@ function saveRow(id,e){
   r.ip=ni;r.p=np;r.o=no;r.u=nu??r.u;r.pw=npw??r.pw;
   if(changed){if(!pending[id])pending[id]={};pending[id]={ip:r.ip,p:r.p,o:r.o,u:r.u,pw:r.pw};updChg();}
   toast('✅','Fila actualizada — recuerda Guardar Todo');
-  render();
+  buildProcFilter(); render();
 }
 
 function cancelRow(id,e){
@@ -541,7 +601,7 @@ function commit(cell,f,id,save){
   let v=inp?inp.value.trim():null;
   if(save&&v!==null&&v!==r[f]){if(!pending[id])pending[id]={};pending[id][f]=v;r[f]=v;updChg();}
   document.getElementById('r'+id)?.classList.remove('editing');
-  render();
+  buildProcFilter(); render();
 }
 function updChg(){
   const c=Object.keys(pending).length;
@@ -552,7 +612,7 @@ function del(id,e){
   e.stopPropagation();
   const r=data.find(d=>d.id===id);if(!r)return;
   if(!confirm(`¿Eliminar "${r.m}" (${r.ip})?`))return;
-  data=data.filter(d=>d.id!==id);delete pending[id];updChg();toast('🗑️',`"${r.m}" eliminado`);render();
+  data=data.filter(d=>d.id!==id);delete pending[id];updChg();toast('🗑️',`"${r.ip}" eliminado`);buildProcFilter();render();
 }
 function toggleForm(){document.getElementById('addForm').classList.toggle('on');}
 function addRow(){
@@ -568,7 +628,7 @@ function addRow(){
   document.getElementById('nP').value='';document.getElementById('nU').value='';
   document.getElementById('nPW').value='';
   document.getElementById('addForm').classList.remove('on');
-  page=Math.ceil(data.length/PG);render();toast('✅',`"${ip}" agregado`);
+  page=Math.ceil(data.length/PG);buildProcFilter();render();toast('✅',`"${ip}" agregado`);
 }
 async function saveAll(){
   const c = Object.keys(pending).length;
@@ -597,11 +657,19 @@ async function _pushData(){
   } catch{ return false; }
 }
 function exportCSV(){
-  const h=['Maquina','IP','Proceso','OS','Usuario','Password'];
-  const rows=data.map(d=>[d.m,d.ip,d.p,d.o,d.u||'',d.pw||'']);
-  const csv=[h,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'CyberIps.csv'});
-  a.click();toast('📄','CSV exportado');
+  const h=['IP','PROCESO','SO','USUARIO','PASSWORD'];
+  const rows=data.map(d=>[d.ip,d.p,d.o,d.u||'',d.pw||'']);
+  if(typeof XLSX !== 'undefined'){
+    const ws = XLSX.utils.aoa_to_sheet([h, ...rows]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'CyberIPS');
+    XLSX.writeFile(wb, 'CyberIPS_Export.xlsx');
+    toast('📄','Excel (.xlsx) exportado');
+  } else {
+    const csv='\uFEFF'+[h,...rows].map(r=>r.join(';')).join('\r\n');
+    const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),download:'CyberIps.csv'});
+    a.click();toast('📄','CSV (Excel) exportado');
+  }
 }
 function renderPg(tp){
   const c=document.getElementById('pbs');
@@ -627,6 +695,157 @@ function toast(icon,msg){
 }
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveAll();}});
 init();
+/* ===== CSV IMPORT ===== */
+let imRows = [];
+
+function openImport(){
+  document.getElementById('csvFile').click();
+}
+function closeImport(e){
+  if(e && e.target !== document.getElementById('imOverlay')) return;
+  document.getElementById('imOverlay').classList.remove('on');
+  document.getElementById('csvFile').value='';
+  imRows=[];
+}
+function handleFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+  if(isExcel && typeof XLSX !== 'undefined'){
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = new Uint8Array(ev.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const firstSheet = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheet];
+        const csvText = XLSX.utils.sheet_to_csv(worksheet, {FS: ';'});
+        parseCSV(csvText);
+      } catch(err){
+        toast('❌','Error al leer archivo Excel: '+err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try{ parseCSV(ev.target.result); }
+      catch(err){ toast('❌','Error al leer el archivo: '+err.message); }
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+}
+function parseCSV(text){
+  const lines = text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+  if(!lines.length){ toast('⚠️','El archivo está vacío'); return; }
+
+  // Detect separator: comma, semicolon, tab
+  let sep = ',';
+  if(lines[0].includes(';')) sep = ';';
+  else if(lines[0].includes('\t')) sep = '\t';
+
+  // Check if first line is header
+  const firstLower = lines[0].toLowerCase();
+  const hasHeader = firstLower.includes('ip') || firstLower.includes('proceso');
+  const dataLines = hasHeader ? lines.slice(1) : lines;
+
+  const existingIPs = new Set(data.map(d=>d.ip.trim()));
+  imRows = [];
+
+  dataLines.forEach((line, idx) => {
+    if(!line.trim()) return;
+    const cols = line.split(sep).map(c=>c.trim().replace(/^"|"$/g,''));
+    const ip  = cols[0]||'';
+    const p   = cols[1]||'';
+    const o   = (cols[2]||'').toUpperCase().includes('WIN') ? 'WINDOWS' : 'LINUX';
+    const u   = cols[3]||'ugenome';
+    const pw  = cols[4]||'UbuntuCyb2026$';
+
+    let status = 'new';
+    if(!ip || !ip.match(/^\d{1,3}(\.\d{1,3}){3}$/)) status='err';
+    else if(existingIPs.has(ip)) status='dup';
+
+    imRows.push({ip, p, o, u, pw, status, line:idx+1+(hasHeader?1:0)});
+  });
+
+  showImportModal();
+}
+function showImportModal(){
+  const total = imRows.length;
+  const news  = imRows.filter(r=>r.status==='new').length;
+  const dups  = imRows.filter(r=>r.status==='dup').length;
+  const errs  = imRows.filter(r=>r.status==='err').length;
+
+  document.getElementById('imSummary').innerHTML=`
+    <span class="im-stat total">📋 ${total} filas</span>
+    <span class="im-stat new">✅ ${news} nuevas</span>
+    ${dups?`<span class="im-stat dup">⚠️ ${dups} duplicadas</span>`:''}
+    ${errs?`<span class="im-stat err">❌ ${errs} inválidas</span>`:''}
+  `;
+
+  document.getElementById('imTbody').innerHTML = imRows.map(r=>`
+    <tr class="is-${r.status}">
+      <td>${esc(r.ip)}</td>
+      <td>${esc(r.p)}</td>
+      <td>${r.o}</td>
+      <td>${esc(r.u)}</td>
+      <td>••••••</td>
+      <td><span class="im-badge ${r.status==='new'?'n':r.status==='dup'?'d':'e'}">
+        ${r.status==='new'?'NUEVA':r.status==='dup'?'DUPLICADA':'INVÁLIDA'}
+      </span></td>
+    </tr>`).join('');
+
+  document.getElementById('imNote').textContent =
+    news>0 ? `Se importarán ${news} IP${news!==1?'s':''} nuevas. Las amarillas ya existen en el panel.`
+           : 'No hay IPs nuevas para importar.';
+
+  document.getElementById('imConfirmBtn').disabled = news===0;
+  document.getElementById('imAllBtn').style.display = dups>0 ? '' : 'none';
+  document.getElementById('imOverlay').classList.add('on');
+}
+function confirmImport(includeDups){
+  const toAdd = imRows.filter(r=> r.status==='new' || (includeDups && r.status==='dup'));
+  if(!toAdd.length){ toast('⚠️','Nada que importar'); return; }
+  toAdd.forEach(r=>{
+    const rec = {id:nid++, m:r.ip, ip:r.ip, p:r.p, o:r.o, u:r.u, pw:r.pw};
+    data.push(rec);
+    pending[rec.id]={...rec};
+  });
+  updChg(); buildProcFilter(); render();
+  closeImport();
+  toast('✅', `${toAdd.length} equipo${toAdd.length!==1?'s':''} importado${toAdd.length!==1?'s':''}. Recuerda Guardar Todo.`);
+}
+function downloadTemplate(){
+  if(typeof XLSX !== 'undefined'){
+    const data = [
+      ['IP', 'PROCESO', 'SO', 'USUARIO', 'PASSWORD'],
+      ['192.168.49.100', 'AJUSTES_SV', 'LINUX', 'ugenome', 'UbuntuCyb2026$'],
+      ['192.168.49.101', 'RPACNOS', 'LINUX', 'ugenome', 'UbuntuCyb2026$'],
+      ['192.168.51.200', 'VARIADO', 'WINDOWS', 'Sistemas', 'Cyber123']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'CyberIPS');
+    XLSX.writeFile(wb, 'plantilla_cyberips.xlsx');
+    toast('📄','Plantilla Excel (.xlsx) descargada');
+  } else {
+    const csv = '\uFEFF' + [
+      'IP;PROCESO;SO;USUARIO;PASSWORD',
+      '192.168.49.100;AJUSTES_SV;LINUX;ugenome;UbuntuCyb2026$',
+      '192.168.49.101;RPACNOS;LINUX;ugenome;UbuntuCyb2026$',
+      '192.168.51.200;VARIADO;WINDOWS;Sistemas;Cyber123',
+    ].join('\r\n');
+    const a = Object.assign(document.createElement('a'),{
+      href: URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),
+      download: 'plantilla_cyberips.csv'
+    });
+    a.click();
+    toast('📄','Plantilla Excel descargada');
+  }
+}
+/* ===== END CSV IMPORT ===== */
+
 </script>
 </body>
 </html>
