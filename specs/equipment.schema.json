@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EquipmentRegistry",
+  "description": "Especificación de esquema formal para los equipos registrados en CyberIPS (data.json).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "ip", "m", "p", "o"],
+    "properties": {
+      "id": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Identificador único entero para la máquina"
+      },
+      "m": {
+        "type": "string",
+        "description": "Nombre o etiqueta identificadora de la máquina"
+      },
+      "ip": {
+        "type": "string",
+        "pattern": "^\\d{1,3}(\\.\\d{1,3}){3}$",
+        "description": "Dirección IPv4 válida en formato decimal con puntos"
+      },
+      "p": {
+        "type": "string",
+        "description": "Nombre del proceso en ejecución, sincronizado con Izzi o asignado manualmente"
+      },
+      "o": {
+        "type": "string",
+        "enum": ["LINUX", "WINDOWS", "NO"],
+        "description": "Sistema operativo instalado en la máquina"
+      },
+      "u": {
+        "type": "string",
+        "description": "Nombre de usuario de acceso local/SSH/RDP"
+      },
+      "pw": {
+        "type": "string",
+        "description": "Contraseña de acceso para administración remota"
+      }
+    },
+    "additionalProperties": true
+  }
+}

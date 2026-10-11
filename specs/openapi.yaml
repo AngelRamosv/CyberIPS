@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: CyberIPS API Specification
+  description: Spec-Driven contract for the CyberIPS internal infrastructure management dashboard and Izzi synchronization engine.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8765
+    description: Servidor Local
+  - url: http://192.168.80.159:8765
+    description: Servidor en Red Local (LAN)
+
+paths:
+  /:
+    get:
+      summary: Servir Dashboard Web
+      description: Retorna el archivo index.html para la interfaz de usuario.
+      responses:
+        '200':
+          description: Dashboard cargado exitosamente.
+          content:
+            text/html; charset=utf-8:
+              schema:
+                type: string
+
+  /api/data:
+    get:
+      summary: Obtener lista de equipos
+      description: Retorna el catálogo completo de equipos registrados junto con sus procesos actualizados.
+      responses:
+        '200':
+          description: Lista de equipos en formato JSON.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Equipment'
+        '500':
+          description: Error al leer la base de datos local.
+          content:
+            text/plain:
+              schema:
+                type: string
+
+    post:
+      summary: Actualizar y persistir equipos
+      description: Guarda el conjunto completo de equipos en la base de datos local (data.json).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Equipment'
+      responses:
+        '200':
+          description: Datos guardados correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Payload JSON inválido o malformado.
+        '500':
+          description: Error al escribir en disco.
+
+components:
+  schemas:
+    Equipment:
+      type: object
+      required:
+        - id
+        - ip
+        - m
+        - p
+        - o
+      properties:
+        id:
+          type: integer
+          description: Identificador único secuencial del equipo
+          example: 1
+        m:
+          type: string
+          description: Nombre o alias de la máquina
+          example: "Vix33"
+        ip:
+          type: string
+          format: ipv4
+          description: Dirección IP asignada en red interna
+          example: "192.168.49.77"
+        p:
+          type: string
+          description: Nombre del proceso RPA actualmente asignado
+          example: "Ajustes (Sin Validacion) - rpaajustes1"
+        o:
+          type: string
+          enum: [LINUX, WINDOWS, NO]
+          description: Sistema operativo de la máquina
+          example: "LINUX"
+        u:
+          type: string
+          description: Usuario del sistema operativo para acceso
+          example: "ugenome"
+        pw:
+          type: string
+          description: Contraseña de acceso
+          example: "UbuntuCyb2026$"
